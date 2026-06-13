@@ -6,898 +6,1113 @@
 <title>ContextGraph — Understand Any Codebase in Minutes</title>
 <meta name="description" content="Paste a GitHub repository URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.">
 <meta property="og:title" content="ContextGraph — Understand Any Codebase in Minutes">
-<meta property="og:description" content="Paste a GitHub URL. Get an interactive architecture map, dependency graph, and AI-generated explanations — instantly.">
+<meta property="og:description" content="Paste a GitHub URL. Get an interactive architecture map, dependency insights, and AI-generated explanations — instantly.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://contextgraph.dev">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:#070709;
-  --bg1:#0e0e11;
-  --bg2:#16161a;
-  --bg3:#1e1e24;
+  --bg:#060608;
+  --s1:#0d0d11;
+  --s2:#13131a;
+  --s3:#1c1c26;
   --border:rgba(255,255,255,0.07);
-  --border2:rgba(255,255,255,0.12);
-  --text:#f2f2f4;
-  --text2:#8c8c99;
-  --text3:#44444f;
-  --green:#22c55e;
-  --blue:#4f8ef7;
-  --amber:#f0a429;
-  --red:#f06060;
+  --b2:rgba(255,255,255,0.12);
+  --t1:#f0f0f5;
+  --t2:#888899;
+  --t3:#40404d;
+  --blue:#4a80f0;
+  --green:#1fc562;
+  --amber:#e8a020;
+  --red:#e85555;
   --r:8px;
-  --r2:14px;
+  --r2:12px;
   --f:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-  --fm:'SF Mono','Fira Code','Cascadia Code',Consolas,monospace;
+  --m:'SF Mono','Fira Code','Cascadia Code',Consolas,monospace;
 }
-
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--f);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg);color:var(--t1);font-family:var(--f);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
-button{font-family:var(--f);cursor:pointer;border:none;background:none}
-::selection{background:rgba(79,142,247,0.25)}
+button{font-family:var(--f)}
+::selection{background:rgba(74,128,240,0.25)}
 
 /* ── NAV ── */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:200;
+  position:fixed;inset:0 0 auto 0;z-index:500;
   display:flex;align-items:center;justify-content:space-between;
-  height:52px;padding:0 32px;
-  background:rgba(7,7,9,0.75);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  height:52px;padding:0 28px;
+  background:rgba(6,6,8,0.7);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
 }
-.nav-logo{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;letter-spacing:-0.02em;color:var(--text)}
-.nav-links{display:flex;align-items:center;gap:1px}
-.nav-links a{padding:5px 12px;font-size:13px;color:var(--text3);border-radius:6px;transition:color .15s,background .15s}
-.nav-links a:hover{color:var(--text2);background:rgba(255,255,255,0.05)}
-.nav-right{display:flex;align-items:center;gap:8px}
-
+.logo{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;letter-spacing:-0.02em}
+.nav-mid{display:flex;gap:1px}
+.nav-mid a{padding:5px 12px;font-size:13px;color:var(--t3);border-radius:6px;transition:color .15s,background .15s}
+.nav-mid a:hover{color:var(--t2);background:rgba(255,255,255,0.04)}
+.nav-end{display:flex;gap:8px;align-items:center}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:7px 16px;font-size:13px;font-weight:500;border-radius:var(--r);
-  border:1px solid transparent;transition:all .15s;white-space:nowrap;font-family:var(--f);
-  cursor:pointer;
+  padding:7px 16px;font-size:13px;font-weight:500;
+  border-radius:var(--r);border:1px solid transparent;cursor:pointer;
+  transition:all .15s;white-space:nowrap;font-family:var(--f);
 }
-.btn-ghost{color:var(--text2);border-color:var(--border);background:transparent}
-.btn-ghost:hover{color:var(--text);border-color:var(--border2);background:rgba(255,255,255,0.04)}
-.btn-solid{color:#000;background:var(--text);border-color:var(--text)}
-.btn-solid:hover{background:#dadadd;border-color:#dadadd}
-.btn-lg{padding:11px 24px;font-size:14px;border-radius:var(--r)}
-
-@media(max-width:760px){.nav-links{display:none}}
+.ghost{color:var(--t2);border-color:var(--border);background:transparent}
+.ghost:hover{color:var(--t1);border-color:var(--b2);background:rgba(255,255,255,0.04)}
+.solid{color:#000;background:var(--t1);border-color:var(--t1)}
+.solid:hover{background:#d8d8e8}
+.btn-lg{padding:11px 24px;font-size:14px;border-radius:var(--r2)}
+@media(max-width:720px){.nav-mid{display:none}}
 
 /* ── HERO ── */
 #hero{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:100px 28px 80px;
-  position:relative;overflow:hidden;text-align:center;
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:100px 24px 80px;text-align:center;overflow:hidden;
 }
-.hero-grid{
+#bgCanvas{position:absolute;inset:0;opacity:.55}
+.hero-fade{
   position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.028) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.028) 1px,transparent 1px);
-  background-size:56px 56px;
-  mask-image:radial-gradient(ellipse 70% 55% at 50% 0%,black 0%,transparent 100%);
-  pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,var(--bg) 0%,transparent 60%);
+  pointer-events:none;z-index:1;
 }
-.hero-glow{
-  position:absolute;top:-20%;left:50%;transform:translateX(-50%);
-  width:1000px;height:700px;
-  background:radial-gradient(ellipse at 50% 20%,rgba(79,142,247,0.09) 0%,transparent 60%);
-  pointer-events:none;
-}
+.hero-body{position:relative;z-index:2;width:100%}
 
-.hero-kicker{
+.kicker{
   display:inline-flex;align-items:center;gap:8px;
   padding:5px 14px 5px 8px;margin-bottom:32px;
-  background:rgba(79,142,247,0.08);
-  border:1px solid rgba(79,142,247,0.18);
-  border-radius:20px;font-size:12px;color:rgba(160,180,255,0.9);
+  background:rgba(74,128,240,0.09);border:1px solid rgba(74,128,240,0.22);
+  border-radius:20px;font-size:12px;color:rgba(150,180,255,0.9);
 }
-.kicker-dot{width:6px;height:6px;border-radius:50%;background:#4f8ef7;box-shadow:0 0 10px #4f8ef7;animation:kd 2.5s ease-in-out infinite}
-@keyframes kd{0%,100%{opacity:1}50%{opacity:.25}}
+.kicker-dot{width:6px;height:6px;border-radius:50%;background:#4a80f0;box-shadow:0 0 10px #4a80f0;animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
 
-.hero-h1{
-  font-size:clamp(40px,6.5vw,74px);font-weight:700;
-  letter-spacing:-0.045em;line-height:1.04;
-  max-width:820px;margin-bottom:22px;
+h1{
+  font-size:clamp(42px,7vw,80px);font-weight:700;
+  letter-spacing:-0.05em;line-height:1.02;max-width:860px;margin:0 auto 24px;
 }
-.hero-h1 .dim{color:var(--text3)}
-
+h1 span{color:var(--t3)}
 .hero-sub{
-  font-size:clamp(15px,1.8vw,18px);color:var(--text2);
-  line-height:1.75;max-width:480px;margin:0 auto 48px;
+  font-size:clamp(15px,2vw,19px);color:var(--t2);
+  line-height:1.75;max-width:500px;margin:0 auto 48px;
 }
 
-/* ── URL FORM ── */
-.url-form{
-  width:100%;max-width:600px;
-  background:var(--bg1);
-  border:1px solid var(--border2);
-  border-radius:var(--r2);
-  overflow:hidden;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.03),0 32px 80px rgba(0,0,0,0.5);
-  transition:border-color .2s,box-shadow .2s;
+/* URL INPUT */
+.url-box{
+  width:100%;max-width:620px;margin:0 auto;
+  background:var(--s1);border:1px solid var(--b2);
+  border-radius:var(--r2);overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.025),0 40px 100px rgba(0,0,0,0.55);
+  transition:border-color .25s,box-shadow .25s;
 }
-.url-form:focus-within{
-  border-color:rgba(79,142,247,0.4);
-  box-shadow:0 0 0 3px rgba(79,142,247,0.08),0 32px 80px rgba(0,0,0,0.5);
+.url-box:focus-within{
+  border-color:rgba(74,128,240,0.5);
+  box-shadow:0 0 0 4px rgba(74,128,240,0.08),0 40px 100px rgba(0,0,0,0.55);
 }
-.url-row{
-  display:flex;align-items:center;
-  padding:4px 4px 4px 16px;gap:8px;
+.url-row{display:flex;align-items:center;padding:3px 3px 3px 14px;gap:8px}
+.url-pre{font-size:13px;color:var(--t3);font-family:var(--m);user-select:none;flex-shrink:0}
+.url-in{
+  flex:1;background:none;border:none;outline:none;
+  font-size:14px;font-family:var(--m);color:var(--t1);
+  padding:11px 4px;min-width:0;caret-color:var(--blue);
 }
-.url-prefix{font-size:13px;color:var(--text3);font-family:var(--fm);white-space:nowrap;user-select:none}
-.url-input{
-  flex:1;background:transparent;border:none;outline:none;
-  font-size:14px;font-family:var(--fm);color:var(--text);
-  padding:10px 4px;min-width:0;
-  caret-color:var(--blue);
+.url-in::placeholder{color:var(--t3)}
+.url-go{
+  padding:10px 20px;background:var(--t1);color:#000;
+  border:none;border-radius:9px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .15s;flex-shrink:0;font-family:var(--f);
 }
-.url-input::placeholder{color:var(--text3)}
-.url-btn{
-  padding:9px 18px;background:var(--text);color:#000;
-  border-radius:9px;font-size:13px;font-weight:600;
-  border:none;cursor:pointer;transition:all .15s;white-space:nowrap;
-  flex-shrink:0;font-family:var(--f);
-}
-.url-btn:hover{background:#dadadd}
-.url-btn:disabled{opacity:.5;cursor:not-allowed}
+.url-go:hover:not(:disabled){background:#d0d0e0}
+.url-go:disabled{opacity:.5;cursor:not-allowed}
 .url-status{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 16px;border-top:1px solid var(--border);
-  font-size:11.5px;color:var(--text3);font-family:var(--fm);
-  min-height:36px;
-  transition:color .2s;
+  display:flex;align-items:center;gap:8px;padding:8px 14px;
+  border-top:1px solid var(--border);font-size:11.5px;
+  font-family:var(--m);color:var(--t3);min-height:34px;transition:all .2s;
 }
-.url-status-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .2s}
-.url-status.scanning .url-status-dot{background:var(--amber);box-shadow:0 0 8px var(--amber);animation:kd 1s ease-in-out infinite}
-.url-status.done .url-status-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
-.url-status.err .url-status-dot{background:var(--red)}
+.sd{width:5px;height:5px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.url-status.scan .sd{background:var(--amber);box-shadow:0 0 8px var(--amber);animation:pulse .9s ease-in-out infinite}
+.url-status.ok   .sd{background:var(--green);box-shadow:0 0 8px var(--green)}
+.url-status.err  .sd{background:var(--red)}
 
-.hero-meta{display:flex;align-items:center;gap:32px;margin-top:40px;justify-content:center}
-.hm{display:flex;flex-direction:column;align-items:center;gap:2px}
-.hm-val{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.04em}
-.hm-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
-.hm-sep{width:1px;height:32px;background:var(--border)}
+.stats{display:flex;align-items:center;justify-content:center;gap:0;margin-top:48px}
+.stat{padding:12px 28px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-v{font-size:19px;font-weight:700;letter-spacing:-0.04em;color:var(--t1)}
+.stat-l{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-top:2px}
 
-/* ── SECTION LAYOUT ── */
-.container{max-width:1120px;margin:0 auto;padding:0 32px}
-section{padding:96px 0}
+/* ── CONTAINER ── */
+.wrap{max-width:1140px;margin:0 auto;padding:0 28px}
 
-.sec-tag{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:16px;
+/* ── DEMO SECTION ── */
+#demo{padding:96px 0;background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sec-eye{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sec-eye::before{content:'';width:16px;height:1px;background:currentColor}
+.sec-h{font-size:clamp(26px,4vw,44px);font-weight:700;letter-spacing:-0.04em;line-height:1.08;margin-bottom:12px}
+.sec-p{font-size:16px;color:var(--t2);line-height:1.75;max-width:440px}
+
+/* DEMO CARD */
+.demo-card{
+  margin-top:56px;
+  border:1px solid var(--border);border-radius:16px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.02),0 60px 140px rgba(0,0,0,0.65);
+  background:var(--bg);
 }
-.sec-tag::before{content:'';display:block;width:14px;height:1px;background:currentColor}
-.sec-h{
-  font-size:clamp(26px,3.8vw,42px);font-weight:700;
-  letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px;
+.demo-bar{
+  display:flex;align-items:center;padding:0 18px;height:44px;
+  background:var(--s2);border-bottom:1px solid var(--border);gap:12px;
 }
-.sec-p{font-size:16px;color:var(--text2);line-height:1.75;max-width:460px}
+.dots{display:flex;gap:5px}
+.dot{width:10px;height:10px;border-radius:50%}
+.dr{background:#ff5f57}.dy{background:#febc2e}.dg{background:#28c840}
+.bar-url{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:12px;color:var(--t3);font-family:var(--m);
+}
+.bar-pill{
+  display:flex;align-items:center;gap:6px;padding:3px 10px;
+  background:rgba(31,197,98,0.08);border:1px solid rgba(31,197,98,0.18);
+  border-radius:12px;font-size:10.5px;color:rgba(130,240,160,0.9);
+}
+.bar-pill-dot{width:4px;height:4px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+
+/* DEMO BODY */
+.demo-inner{display:grid;grid-template-columns:1fr 400px;height:520px}
+
+/* GRAPH */
+.graph-pane{
+  position:relative;background:var(--bg);
+  border-right:1px solid var(--border);overflow:hidden;
+}
+.graph-toolbar{
+  position:absolute;top:12px;left:12px;right:12px;
+  display:flex;align-items:center;justify-content:space-between;z-index:10;
+}
+.graph-label{font-size:11px;color:var(--t3);font-family:var(--m)}
+.graph-legend{display:flex;gap:14px}
+.leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t3)}
+.leg-dot{width:7px;height:7px;border-radius:50%}
+#graphSvg{
+  width:100%;height:100%;display:block;
+  cursor:grab;user-select:none;
+}
+#graphSvg:active{cursor:grabbing}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;pointer-events:none;z-index:999;
+  background:var(--s2);border:1px solid var(--b2);
+  border-radius:8px;padding:10px 14px;
+  font-size:12px;opacity:0;transition:opacity .15s;
+  max-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+#tooltip.show{opacity:1}
+.tt-name{font-family:var(--m);font-size:12px;color:var(--t1);margin-bottom:4px;font-weight:500}
+.tt-meta{font-size:11px;color:var(--t2)}
+
+/* ANALYSIS PANE */
+.ana-pane{background:var(--s1);display:flex;flex-direction:column;overflow:hidden}
+.ana-header{
+  padding:12px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.ana-title{font-size:11px;font-weight:500;color:var(--t2);font-family:var(--m)}
+.ana-file{font-size:11px;color:var(--t3);font-family:var(--m);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.ana-scroll{flex:1;overflow-y:auto;padding:18px;scrollbar-width:thin;scrollbar-color:var(--s3) transparent}
+.ana-scroll::-webkit-scrollbar{width:4px}
+.ana-scroll::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+/* AI summary box */
+.ai-box{
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;margin-bottom:16px;
+}
+.ai-box-label{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;font-family:var(--f)}
+.ai-text{font-size:13px;color:var(--t2);line-height:1.7}
+
+/* metrics row */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.metric{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.metric-v{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-0.04em;font-family:var(--m);line-height:1}
+.metric-l{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* deps list */
+.deps-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:10px;font-family:var(--f)}
+.dep-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;background:var(--s2);border:1px solid var(--border);
+  border-radius:6px;margin-bottom:5px;font-size:12px;transition:border-color .15s;cursor:pointer;
+}
+.dep-item:hover{border-color:var(--b2)}
+.dep-name{font-family:var(--m);color:var(--t2)}
+.dep-badge{
+  font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;
+  font-family:var(--f);flex-shrink:0;
+}
+.b-blue{background:rgba(74,128,240,.1);color:#93c5fd;border:1px solid rgba(74,128,240,.2)}
+.b-green{background:rgba(31,197,98,.1);color:#86efac;border:1px solid rgba(31,197,98,.2)}
+.b-amber{background:rgba(232,160,32,.1);color:#fde68a;border:1px solid rgba(232,160,32,.2)}
+.b-red{background:rgba(232,85,85,.1);color:#fca5a5;border:1px solid rgba(232,85,85,.2)}
+.b-gray{background:rgba(64,64,77,.2);color:#8c8c99;border:1px solid rgba(64,64,77,.3)}
+
+/* node selected flash */
+@keyframes nodePop{0%{r:0;opacity:0}60%{opacity:.6}100%{opacity:0}}
 
 /* ── FEATURES ── */
-#features{border-top:1px solid var(--border)}
-.feat-list{
-  display:flex;flex-direction:column;gap:1px;
-  margin-top:56px;border:1px solid var(--border);
-  border-radius:var(--r2);overflow:hidden;background:var(--border);
+#features{padding:96px 0}
+.feat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;margin-top:56px;
 }
 .feat{
-  display:grid;grid-template-columns:240px 1fr auto;
-  align-items:center;gap:0;
-  background:var(--bg1);transition:background .2s;
+  background:var(--s1);padding:36px 30px;
+  transition:background .2s;position:relative;overflow:hidden;
 }
-.feat:hover{background:var(--bg2)}
-.feat-num{
-  padding:28px 32px;
-  font-size:11px;font-family:var(--fm);color:var(--text3);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;gap:12px;
-  height:100%;justify-content:center;
+.feat::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 100%,rgba(74,128,240,0.06),transparent 70%);
+  opacity:0;transition:opacity .3s;
 }
-.feat-num-n{
-  font-size:30px;font-weight:700;color:var(--bg3);
-  letter-spacing:-0.05em;line-height:1;
+.feat:hover{background:var(--s2)}
+.feat:hover::after{opacity:1}
+.feat-n{
+  font-size:11px;font-family:var(--m);color:var(--t3);
+  margin-bottom:16px;
 }
-.feat-num-label{color:var(--text3);line-height:1.5}
-.feat-body{padding:28px 36px}
-.feat-body h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:7px;letter-spacing:-0.015em}
-.feat-body p{font-size:13px;color:var(--text2);line-height:1.65;max-width:480px}
-.feat-ico{
-  padding:28px 36px;display:flex;align-items:center;justify-content:center;
-  color:var(--text3);
-}
-
-/* ── DEMO ── */
-#demo{
-  padding:96px 0;
-  background:var(--bg1);
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.demo-shell{
-  margin-top:56px;
-  border:1px solid var(--border);
-  border-radius:var(--r2);
-  overflow:hidden;
-  background:var(--bg);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.02),0 48px 120px rgba(0,0,0,0.6);
-}
-.demo-titlebar{
-  display:flex;align-items:center;
-  padding:0 20px;height:44px;
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  gap:12px;
-}
-.wdots{display:flex;gap:6px}
-.wd{width:11px;height:11px;border-radius:50%}
-.wd-r{background:#ff5f57}.wd-y{background:#ffbd2e}.wd-g{background:#28ca41}
-.demo-titlebar-center{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  gap:8px;font-size:12px;color:var(--text3);font-family:var(--fm);
-}
-.demo-title-status{
-  display:flex;align-items:center;gap:6px;
-  padding:3px 10px;background:rgba(34,197,94,0.08);
-  border:1px solid rgba(34,197,94,0.15);border-radius:12px;
-  font-size:11px;color:rgba(134,239,172,0.9);
-}
-.demo-title-status-dot{width:4px;height:4px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
-
-.demo-body{display:grid;grid-template-columns:1fr 420px;min-height:480px}
-
-/* graph panel */
-.demo-graph-panel{
-  background:var(--bg);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-}
-.demo-graph-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 20px;border-bottom:1px solid var(--border);
-}
-.demo-graph-title{font-size:11px;color:var(--text3);font-family:var(--fm)}
-.demo-graph-legend{display:flex;align-items:center;gap:12px}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3)}
-.legend-dot{width:7px;height:7px;border-radius:50%}
-#demoGraph{flex:1;width:100%;display:block;min-height:420px}
-
-/* analysis panel */
-.demo-analysis{
-  background:var(--bg1);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-}
-.ana-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 20px;border-bottom:1px solid var(--border);
-}
-.ana-title{font-size:11px;color:var(--text3);font-family:var(--fm)}
-.ana-body{padding:20px;flex:1;overflow-y:auto;font-family:var(--fm);font-size:12px;line-height:1.8}
-.ana-line{display:flex;gap:10px;padding:2px 0;align-items:baseline}
-.ana-line .prompt{color:var(--text3);flex-shrink:0;user-select:none}
-.ana-line .key{color:var(--text2)}
-.ana-line .val{color:var(--text3)}
-.ana-line .val.hl-green{color:#86efac}
-.ana-line .val.hl-amber{color:#fde047}
-.ana-line .val.hl-blue{color:#93c5fd}
-.ana-line .val.hl-red{color:#fca5a5}
-.ana-divider{
-  height:1px;background:var(--border);
-  margin:12px 0;
-}
-.ana-section{
-  font-size:10px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--text3);
-  margin:14px 0 8px;font-family:var(--f);
-}
-.ana-bar-row{display:flex;align-items:center;gap:10px;padding:3px 0}
-.ana-bar-label{width:80px;font-size:11px;color:var(--text2);flex-shrink:0}
-.ana-bar-track{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.ana-bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
-.ana-bar-pct{font-size:10px;color:var(--text3);width:32px;text-align:right;flex-shrink:0}
+.feat h3{font-size:15px;font-weight:600;letter-spacing:-0.02em;margin-bottom:9px}
+.feat p{font-size:13px;color:var(--t2);line-height:1.68}
+.feat-ico{margin-bottom:20px;color:var(--t3)}
 
 /* ── CTA ── */
-#cta{padding:128px 0;text-align:center;position:relative;overflow:hidden}
+#cta{
+  padding:128px 0;text-align:center;position:relative;overflow:hidden;
+  border-top:1px solid var(--border);
+}
 #cta::before{
-  content:'';position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
-  width:800px;height:600px;
-  background:radial-gradient(ellipse,rgba(79,142,247,0.06) 0%,transparent 65%);
+  content:'';position:absolute;top:-250px;left:50%;transform:translateX(-50%);
+  width:900px;height:700px;
+  background:radial-gradient(ellipse,rgba(74,128,240,0.07) 0%,transparent 65%);
   pointer-events:none;
 }
-.cta-inner{position:relative;max-width:560px;margin:0 auto}
-.cta-inner h2{
-  font-size:clamp(30px,4.5vw,52px);font-weight:700;
-  letter-spacing:-0.045em;line-height:1.06;margin-bottom:20px;
-}
-.cta-inner p{font-size:17px;color:var(--text2);line-height:1.7;margin-bottom:40px}
+.cta-body{position:relative;max-width:540px;margin:0 auto}
+.cta-body h2{font-size:clamp(32px,5vw,56px);font-weight:700;letter-spacing:-0.05em;line-height:1.04;margin-bottom:20px}
+.cta-body p{font-size:17px;color:var(--t2);line-height:1.75;margin-bottom:40px}
 .cta-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
 
 /* ── FOOTER ── */
-footer{border-top:1px solid var(--border)}
-.footer-inner{
-  display:grid;grid-template-columns:1.4fr repeat(3,auto);
-  gap:48px;padding:56px 0 40px;
-}
-.fb-mark{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;margin-bottom:10px}
-.fb-desc{font-size:12px;color:var(--text3);line-height:1.7;max-width:180px}
-.fc h4{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:14px}
-.fc ul{list-style:none;display:flex;flex-direction:column;gap:9px}
-.fc a{font-size:12px;color:var(--text3);transition:color .15s}
-.fc a:hover{color:var(--text2)}
-.footer-bottom{
-  border-top:1px solid var(--border);padding:18px 0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.footer-copy{font-size:12px;color:var(--text3)}
-.ticker{font-size:11px;font-family:var(--fm);color:var(--text3);padding:3px 10px;border:1px solid var(--border);border-radius:5px;letter-spacing:.04em}
+footer{border-top:1px solid var(--border);padding:56px 0 32px}
+.footer-grid{display:grid;grid-template-columns:1.5fr repeat(3,auto);gap:48px;margin-bottom:48px}
+.f-brand{font-size:14px;font-weight:600;display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.f-desc{font-size:12px;color:var(--t3);line-height:1.7;max-width:180px}
+.fc h4{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:14px}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fc a{font-size:12px;color:var(--t3);transition:color .15s}
+.fc a:hover{color:var(--t2)}
+.footer-btm{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:20px}
+.f-copy{font-size:12px;color:var(--t3)}
+.ticker{font-size:11px;font-family:var(--m);color:var(--t3);padding:3px 10px;border:1px solid var(--border);border-radius:5px}
 
-/* ── REVEAL ANIM ── */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
-.reveal.in{opacity:1;transform:none}
-.reveal.d1{transition-delay:.07s}.reveal.d2{transition-delay:.14s}.reveal.d3{transition-delay:.21s}
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
+
+/* ── SCAN OVERLAY ── */
+#scanOverlay{
+  position:absolute;inset:0;z-index:20;
+  background:rgba(6,6,8,0.94);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#scanOverlay.show{opacity:1;pointer-events:all}
+.scan-bar-wrap{width:260px;height:2px;background:var(--s3);border-radius:2px;overflow:hidden}
+.scan-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),rgba(74,128,240,0.3));border-radius:2px;width:0%;transition:width .4s ease}
+.scan-step{font-size:12px;font-family:var(--m);color:var(--t2)}
+.scan-repo{font-size:13px;font-family:var(--m);color:var(--t1);font-weight:500}
 
 /* ── RESPONSIVE ── */
 @media(max-width:960px){
-  .demo-body{grid-template-columns:1fr}
-  .demo-graph-panel{display:none}
-  .demo-analysis{border-top:none}
-  .feat{grid-template-columns:1fr}
-  .feat-num{border-right:none;border-bottom:1px solid var(--border);padding:20px 24px;flex-direction:row;align-items:center;gap:14px}
-  .feat-num-n{font-size:20px}
-  .feat-ico{display:none}
-  .footer-inner{grid-template-columns:1fr 1fr;gap:32px}
-  .hero-meta{gap:20px}
+  .demo-inner{grid-template-columns:1fr;height:auto}
+  .graph-pane{height:360px}
+  .ana-pane{height:380px}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px}
 }
 @media(max-width:600px){
-  section{padding:72px 0}
-  .container{padding:0 20px}
+  #demo,#features,#cta{padding:72px 0}
+  .wrap{padding:0 20px}
   nav{padding:0 20px}
-  .feat-body{padding:20px 24px}
-  .hero-meta{flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:100%;max-width:320px}
-  .hm{flex-direction:row;justify-content:space-between;padding:12px 16px;width:100%;border-bottom:1px solid var(--border)}
-  .hm:last-child{border-bottom:none}
-  .hm-sep{display:none}
+  .feat-grid{grid-template-columns:1fr}
+  .demo-inner{grid-template-columns:1fr}
+  .stats{flex-direction:column;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content}
+  .stat{border-right:none;border-bottom:1px solid var(--border);width:200px}
+  .stat:last-child{border-bottom:none}
+  .metrics{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
+<!-- TOOLTIP -->
+<div id="tooltip"><div class="tt-name" id="ttName"></div><div class="tt-meta" id="ttMeta"></div></div>
+
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo" aria-label="ContextGraph home">
+  <a href="#" class="logo" aria-label="ContextGraph home">
     <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <line x1="8" y1="8" x2="14" y2="14" stroke="#3f3f46" stroke-width="1.2"/>
-      <line x1="14" y1="14" x2="20" y2="8" stroke="#3f3f46" stroke-width="1.2"/>
-      <line x1="14" y1="14" x2="20" y2="20" stroke="#3f3f46" stroke-width="1.2"/>
-      <line x1="8" y1="8" x2="8" y2="20" stroke="#3f3f46" stroke-width="1.2"/>
-      <line x1="8" y1="20" x2="14" y2="14" stroke="#3f3f46" stroke-width="1.2"/>
-      <path d="M21 7 A10 10 0 1 0 21 21" stroke="#f2f2f4" stroke-width="2" stroke-linecap="round" fill="none"/>
-      <circle cx="8" cy="8" r="2.2" fill="#f2f2f4"/>
-      <circle cx="8" cy="20" r="2.2" fill="#f2f2f4"/>
+      <line x1="8" y1="8" x2="14" y2="14" stroke="#3a3a48" stroke-width="1.2"/>
+      <line x1="14" y1="14" x2="20" y2="8" stroke="#3a3a48" stroke-width="1.2"/>
+      <line x1="14" y1="14" x2="20" y2="20" stroke="#3a3a48" stroke-width="1.2"/>
+      <line x1="8" y1="8" x2="8" y2="20" stroke="#3a3a48" stroke-width="1.2"/>
+      <line x1="8" y1="20" x2="14" y2="14" stroke="#3a3a48" stroke-width="1.2"/>
+      <path d="M21 7 A10 10 0 1 0 21 21" stroke="#f0f0f5" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="8" cy="8" r="2.2" fill="#f0f0f5"/>
+      <circle cx="8" cy="20" r="2.2" fill="#f0f0f5"/>
       <circle cx="20" cy="8" r="1.6" fill="#44444f"/>
       <circle cx="20" cy="20" r="1.6" fill="#44444f"/>
       <circle cx="14" cy="14" r="2.8" fill="#fff"/>
     </svg>
     ContextGraph
   </a>
-
-  <div class="nav-links">
+  <div class="nav-mid">
     <a href="#features">Features</a>
     <a href="#demo">Demo</a>
     <a href="#">Docs</a>
     <a href="#">Pricing</a>
   </div>
-
-  <div class="nav-right">
-    <a href="#" class="btn btn-solid">Analyze Repository</a>
+  <div class="nav-end">
+    <a href="#" class="btn ghost">Sign in</a>
+    <a href="#" class="btn solid">Get started</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section id="hero" aria-label="Hero">
-  <div class="hero-grid" aria-hidden="true"></div>
-  <div class="hero-glow" aria-hidden="true"></div>
-
-  <div class="hero-kicker" role="status" aria-live="polite">
-    <span class="kicker-dot"></span>
-    Public beta — analyzing 10K+ repositories
-  </div>
-
-  <h1 class="hero-h1">
-    Understand any codebase<br><span class="dim">in minutes.</span>
-  </h1>
-
-  <p class="hero-sub">
-    Paste a GitHub URL. Get an interactive architecture map, dependency graph, and AI-generated explanations — instantly.
-  </p>
-
-  <div class="url-form" role="search" aria-label="Repository analyzer">
-    <div class="url-row">
-      <span class="url-prefix" aria-hidden="true">github.com/</span>
-      <input
-        class="url-input"
-        id="urlInput"
-        type="text"
-        placeholder="vercel/next.js"
-        aria-label="GitHub repository path"
-        autocomplete="off"
-        spellcheck="false"
-        value="vercel/next.js"
-      >
-      <button class="url-btn" id="analyzeBtn" onclick="startAnalysis()" aria-label="Analyze repository">
-        Analyze
-      </button>
+<section id="hero">
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="hero-fade" aria-hidden="true"></div>
+  <div class="hero-body">
+    <div class="kicker">
+      <span class="kicker-dot"></span>
+      Now analyzing 10K+ repositories in production
     </div>
-    <div class="url-status" id="urlStatus" role="status" aria-live="polite">
-      <span class="url-status-dot"></span>
-      <span id="urlStatusText">Ready to analyze any public or private repository</span>
-    </div>
-  </div>
+    <h1>Understand any<br><span>codebase in minutes</span></h1>
+    <p class="hero-sub">Paste a GitHub URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.</p>
 
-  <div class="hero-meta" aria-label="Statistics">
-    <div class="hm">
-      <span class="hm-val">100K+</span>
-      <span class="hm-label">Files analyzed</span>
-    </div>
-    <div class="hm-sep" aria-hidden="true"></div>
-    <div class="hm">
-      <span class="hm-val">10K+</span>
-      <span class="hm-label">Repos mapped</span>
-    </div>
-    <div class="hm-sep" aria-hidden="true"></div>
-    <div class="hm">
-      <span class="hm-val">99.9%</span>
-      <span class="hm-label">Accuracy</span>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features" aria-labelledby="feat-hd">
-  <div class="container">
-    <div class="reveal">
-      <div class="sec-tag">What it does</div>
-      <h2 class="sec-h" id="feat-hd">Every layer of a repository,<br>fully mapped.</h2>
-    </div>
-    <div class="feat-list reveal d1" role="list">
-      <div class="feat" role="listitem">
-        <div class="feat-num">
-          <span class="feat-num-n">01</span>
-          <span class="feat-num-label">Architecture &amp;<br>Dependency Graph</span>
-        </div>
-        <div class="feat-body">
-          <h3>See the full picture before touching a single file</h3>
-          <p>ContextGraph renders an interactive node graph of your repository — folders, modules, and their relationships. Identify core paths and peripheral code at a glance. Drag nodes, zoom in, and click any module for a detailed breakdown.</p>
-        </div>
-        <div class="feat-ico" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
-            <circle cx="20" cy="10" r="4.5"/><circle cx="8" cy="30" r="4.5"/><circle cx="32" cy="30" r="4.5"/>
-            <line x1="16.8" y1="13.2" x2="11.2" y2="26.8"/><line x1="23.2" y1="13.2" x2="28.8" y2="26.8"/>
-            <line x1="12.5" y1="30" x2="27.5" y2="30"/>
-            <circle cx="20" cy="20" r="2.5" fill="currentColor" opacity=".3"/>
-          </svg>
-        </div>
+    <div class="url-box" role="search">
+      <div class="url-row">
+        <span class="url-pre" aria-hidden="true">github.com/</span>
+        <input class="url-in" id="urlIn" type="text" placeholder="owner/repository" value="vercel/next.js" spellcheck="false" autocomplete="off" aria-label="GitHub repository">
+        <button class="url-go" id="urlBtn" onclick="analyze()">Analyze →</button>
       </div>
-      <div class="feat" role="listitem">
-        <div class="feat-num">
-          <span class="feat-num-n">02</span>
-          <span class="feat-num-label">AI-Powered<br>Code Intelligence</span>
-        </div>
-        <div class="feat-body">
-          <h3>Plain-language explanations for every module</h3>
-          <p>Click any node and receive a concise, accurate description of what that folder or file does, what it depends on, and why it exists. Built for engineers joining an existing codebase — not for reading 10,000 lines of undocumented code.</p>
-        </div>
-        <div class="feat-ico" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
-            <rect x="6" y="8" width="28" height="24" rx="3"/>
-            <line x1="12" y1="15" x2="28" y2="15"/>
-            <line x1="12" y1="20" x2="22" y2="20"/>
-            <line x1="12" y1="25" x2="25" y2="25"/>
-            <circle cx="29" cy="22.5" r="5.5" fill="var(--bg)" stroke="currentColor"/>
-            <path d="M27 22.5h4M29 20.5v4" stroke-linecap="round"/>
-          </svg>
-        </div>
+      <div class="url-status" id="urlStatus">
+        <span class="sd" id="sd"></span>
+        <span id="statusText">Try vercel/next.js, facebook/react, or any repo you work with</span>
       </div>
-      <div class="feat" role="listitem">
-        <div class="feat-num">
-          <span class="feat-num-n">03</span>
-          <span class="feat-num-label">Entry Points &amp;<br>Risk Detection</span>
-        </div>
-        <div class="feat-body">
-          <h3>Find where execution starts and where debt hides</h3>
-          <p>Automatically detect application entry points, request flows, and high-complexity hotspots. Surface modules with excessive dependencies, circular imports, or stale code — before they become incidents. Designed for both onboarding and architecture reviews.</p>
-        </div>
-        <div class="feat-ico" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2">
-            <circle cx="20" cy="20" r="12"/>
-            <polyline points="16,14 24,20 16,26"/>
-            <circle cx="14" cy="8" r="3"/><circle cx="32" cy="14" r="2.5"/><circle cx="34" cy="30" r="2"/>
-            <line x1="16.4" y1="9.2" x2="19" y2="14"/><line x1="29.6" y1="14.8" x2="26" y2="17"/><line x1="32.2" y1="28.4" x2="29" y2="25"/>
-          </svg>
-        </div>
-      </div>
+    </div>
+
+    <div class="stats" aria-label="Statistics" role="list">
+      <div class="stat" role="listitem"><div class="stat-v">100K+</div><div class="stat-l">Files analyzed</div></div>
+      <div class="stat" role="listitem"><div class="stat-v">10K+</div><div class="stat-l">Repos mapped</div></div>
+      <div class="stat" role="listitem"><div class="stat-v">99.9%</div><div class="stat-l">Accuracy</div></div>
     </div>
   </div>
 </section>
 
 <!-- DEMO -->
-<section id="demo" aria-labelledby="demo-hd">
-  <div class="container">
-    <div class="reveal">
-      <div class="sec-tag">Live output</div>
-      <h2 class="sec-h" id="demo-hd">vercel/next.js,<br>analyzed.</h2>
-      <p class="sec-p">What ContextGraph returns in under 4 seconds on one of the most complex open-source repositories in production.</p>
+<section id="demo">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-eye">Interactive Demo</div>
+      <h2 class="sec-h">Click any node to explore.</h2>
+      <p class="sec-p">This is real ContextGraph output for <code style="font-family:var(--m);color:var(--t2);font-size:14px">vercel/next.js</code>. Click nodes in the graph to see live analysis.</p>
     </div>
-
-    <div class="demo-shell reveal d1">
-      <div class="demo-titlebar">
-        <div class="wdots">
-          <span class="wd wd-r"></span>
-          <span class="wd wd-y"></span>
-          <span class="wd wd-g"></span>
+    <div class="demo-card rv d1">
+      <div class="demo-bar">
+        <div class="dots">
+          <span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span>
         </div>
-        <div class="demo-titlebar-center">
-          <span style="font-family:var(--fm);font-size:12px;color:var(--text3)">contextgraph — vercel/next.js</span>
-          <div class="demo-title-status">
-            <span class="demo-title-status-dot"></span>
-            Analysis complete
-          </div>
+        <div class="bar-url">
+          <span>contextgraph — vercel/next.js</span>
+          <div class="bar-pill"><span class="bar-pill-dot"></span>4,821 files mapped</div>
         </div>
         <div style="width:80px"></div>
       </div>
-
-      <div class="demo-body">
-        <!-- Graph panel -->
-        <div class="demo-graph-panel">
-          <div class="demo-graph-header">
-            <span class="demo-graph-title">Architecture graph — 38 packages</span>
-            <div class="demo-graph-legend">
-              <div class="legend-item"><span class="legend-dot" style="background:#4f8ef7"></span>Package</div>
-              <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span>Entry</div>
-              <div class="legend-item"><span class="legend-dot" style="background:#f0a429"></span>High complexity</div>
+      <div class="demo-inner">
+        <div class="graph-pane" id="graphPane">
+          <div class="graph-toolbar">
+            <span class="graph-label" id="graphLabel">Architecture graph — click a node to inspect</span>
+            <div class="graph-legend">
+              <div class="leg"><span class="leg-dot" style="background:#4a80f0"></span>Package</div>
+              <div class="leg"><span class="leg-dot" style="background:#1fc562"></span>Entry</div>
+              <div class="leg"><span class="leg-dot" style="background:#e8a020"></span>Complex</div>
             </div>
           </div>
-          <svg id="demoGraph" viewBox="0 0 580 440" xmlns="http://www.w3.org/2000/svg" aria-label="Repository architecture graph"></svg>
-        </div>
-
-        <!-- Analysis panel -->
-        <div class="demo-analysis">
-          <div class="ana-header">
-            <span class="ana-title">contextgraph output</span>
-            <span style="font-size:11px;color:var(--text3);font-family:var(--fm)">3.8s</span>
+          <svg id="graphSvg" aria-label="Interactive repository architecture graph"></svg>
+          <!-- Scan overlay -->
+          <div id="scanOverlay">
+            <span class="scan-repo" id="scanRepo">vercel/next.js</span>
+            <div class="scan-bar-wrap"><div class="scan-bar-fill" id="scanFill"></div></div>
+            <span class="scan-step" id="scanStep">Initializing…</span>
           </div>
-          <div class="ana-body" id="anaBody"></div>
         </div>
+        <div class="ana-pane">
+          <div class="ana-header">
+            <span class="ana-title">analysis</span>
+            <span class="ana-file" id="anaFile">packages/next → server.ts</span>
+          </div>
+          <div class="ana-scroll" id="anaScroll"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-eye">Capabilities</div>
+      <h2 class="sec-h">Built for engineers<br>who move fast.</h2>
+    </div>
+    <div class="feat-grid rv d1">
+      <div class="feat">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2">
+            <circle cx="18" cy="8" r="4.5"/>
+            <circle cx="7" cy="27" r="4.5"/>
+            <circle cx="29" cy="27" r="4.5"/>
+            <line x1="14.7" y1="11.4" x2="10.2" y2="23.6"/>
+            <line x1="21.3" y1="11.4" x2="25.8" y2="23.6"/>
+            <line x1="11.5" y1="27" x2="24.5" y2="27"/>
+          </svg>
+        </div>
+        <div class="feat-n">01 / Architecture</div>
+        <h3>Interactive Architecture Maps</h3>
+        <p>Visualize how every folder, module, and package connects. Drag, zoom, and click any node to explore its role in the system. Instantly understand structure that would take days to read.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="4" y="8" width="28" height="20" rx="3"/>
+            <line x1="10" y1="14" x2="26" y2="14"/>
+            <line x1="10" y1="19" x2="20" y2="19"/>
+            <line x1="10" y1="24" x2="22" y2="24"/>
+            <circle cx="28" cy="22" r="5" fill="var(--s1)" stroke="currentColor"/>
+            <path d="M26 22h4M28 20v4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feat-n">02 / Intelligence</div>
+        <h3>AI Explanations for Every Module</h3>
+        <p>Click any node and receive a plain-language explanation of what it does, what depends on it, and why it exists. No more guessing from filenames or reading 10,000 lines of undocumented code.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-ico" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2">
+            <circle cx="18" cy="18" r="11"/>
+            <polyline points="14,12 22,18 14,24"/>
+            <circle cx="10" cy="6" r="3"/><circle cx="30" cy="12" r="2.5"/><circle cx="32" cy="28" r="2"/>
+            <line x1="12.4" y1="7.2" x2="15.5" y2="12"/>
+            <line x1="27.6" y1="12.6" x2="24" y2="15.2"/>
+            <line x1="30.2" y1="26.4" x2="27" y2="23"/>
+          </svg>
+        </div>
+        <div class="feat-n">03 / Risk Detection</div>
+        <h3>Entry Points & Debt Hotspots</h3>
+        <p>Automatically detect where applications start, how requests flow through the system, and which modules carry excessive complexity. Surface technical debt before it becomes a production incident.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section id="cta" aria-labelledby="cta-hd">
-  <div class="cta-inner reveal">
-    <h2 id="cta-hd">Stop reading<br>codebases blindly.</h2>
-    <p>Turn any repository into a knowledge map. Works on public and private GitHub repositories with no setup required.</p>
-    <div class="cta-row">
-      <a href="#" class="btn btn-solid btn-lg">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5.5"/><polyline points="7,4.5 7,7 8.5,8.5"/></svg>
-        Start Analyzing
-      </a>
-      <a href="#" class="btn btn-ghost btn-lg">Read the docs</a>
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-body rv">
+      <h2>Stop reading codebases<br>blindly.</h2>
+      <p>Turn any GitHub repository into a knowledge map. Works on public and private repos with no setup required.</p>
+      <div class="cta-row">
+        <a href="#" class="btn solid btn-lg">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="7" cy="7" r="5.5"/><polyline points="7,4.5 7,7 8.5,8.5"/></svg>
+          Start Analyzing
+        </a>
+        <a href="#" class="btn ghost btn-lg">Read the docs</a>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer role="contentinfo">
-  <div class="container">
-    <div class="footer-inner">
+  <div class="wrap">
+    <div class="footer-grid">
       <div>
-        <div class="fb-mark">
+        <div class="f-brand">
           <svg width="18" height="18" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-            <line x1="8" y1="8" x2="14" y2="14" stroke="#3f3f46" stroke-width="1.2"/>
-            <line x1="14" y1="14" x2="20" y2="8" stroke="#3f3f46" stroke-width="1.2"/>
-            <line x1="14" y1="14" x2="20" y2="20" stroke="#3f3f46" stroke-width="1.2"/>
-            <line x1="8" y1="8" x2="8" y2="20" stroke="#3f3f46" stroke-width="1.2"/>
-            <line x1="8" y1="20" x2="14" y2="14" stroke="#3f3f46" stroke-width="1.2"/>
-            <path d="M21 7 A10 10 0 1 0 21 21" stroke="#f2f2f4" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <circle cx="8" cy="8" r="2.2" fill="#f2f2f4"/>
-            <circle cx="8" cy="20" r="2.2" fill="#f2f2f4"/>
+            <line x1="8" y1="8" x2="14" y2="14" stroke="#3a3a48" stroke-width="1.2"/>
+            <line x1="14" y1="14" x2="20" y2="8" stroke="#3a3a48" stroke-width="1.2"/>
+            <line x1="14" y1="14" x2="20" y2="20" stroke="#3a3a48" stroke-width="1.2"/>
+            <line x1="8" y1="8" x2="8" y2="20" stroke="#3a3a48" stroke-width="1.2"/>
+            <line x1="8" y1="20" x2="14" y2="14" stroke="#3a3a48" stroke-width="1.2"/>
+            <path d="M21 7 A10 10 0 1 0 21 21" stroke="#f0f0f5" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="8" cy="8" r="2.2" fill="#f0f0f5"/>
+            <circle cx="8" cy="20" r="2.2" fill="#f0f0f5"/>
             <circle cx="20" cy="8" r="1.6" fill="#44444f"/>
             <circle cx="20" cy="20" r="1.6" fill="#44444f"/>
             <circle cx="14" cy="14" r="2.8" fill="#fff"/>
           </svg>
           ContextGraph
         </div>
-        <p class="fb-desc">Understand any codebase in minutes. Graph analysis meets AI intelligence.</p>
+        <p class="f-desc">Understand any codebase in minutes. Graph analysis meets AI intelligence.</p>
       </div>
-      <div class="fc">
-        <h4>Product</h4>
-        <ul>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Pricing</a></li>
-          <li><a href="#">Changelog</a></li>
-          <li><a href="#">Roadmap</a></li>
-        </ul>
-      </div>
-      <div class="fc">
-        <h4>Developers</h4>
-        <ul>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">API Reference</a></li>
-          <li><a href="#">Status</a></li>
-          <li><a href="#">Blog</a></li>
-        </ul>
-      </div>
-      <div class="fc">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Terms</a></li>
-        </ul>
-      </div>
+      <div class="fc"><h4>Product</h4><ul>
+        <li><a href="#">Features</a></li><li><a href="#">Pricing</a></li>
+        <li><a href="#">Changelog</a></li><li><a href="#">Roadmap</a></li>
+      </ul></div>
+      <div class="fc"><h4>Developers</h4><ul>
+        <li><a href="#">Documentation</a></li><li><a href="#">API Reference</a></li>
+        <li><a href="#">Status</a></li><li><a href="#">Blog</a></li>
+      </ul></div>
+      <div class="fc"><h4>Company</h4><ul>
+        <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
+        <li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li>
+      </ul></div>
     </div>
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2026 ContextGraph. All rights reserved.</span>
+    <div class="footer-btm">
+      <span class="f-copy">© 2026 ContextGraph. All rights reserved.</span>
       <span class="ticker">$CTGX</span>
     </div>
   </div>
 </footer>
 
 <script>
-// ── REVEAL ON SCROLL ──
-const obs = new IntersectionObserver(
-  entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in') }),
+// ─────────────────────────────────────────────────────────────
+// ANIMATED HERO BACKGROUND CANVAS
+// ─────────────────────────────────────────────────────────────
+(function heroCanvas() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes = [], animId;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function initNodes() {
+    nodes = [];
+    const count = Math.min(55, Math.floor(W * H / 22000));
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+        r: Math.random() * 2.2 + 0.8,
+        a: Math.random() * 0.5 + 0.15,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const maxDist = 130;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+
+      for (let j = i + 1; j < nodes.length; j++) {
+        const m = nodes[j];
+        const dx = n.x - m.x, dy = n.y - m.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.18;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(74,128,240,${alpha})`;
+          ctx.lineWidth = 0.7;
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(m.x, m.y);
+          ctx.stroke();
+        }
+      }
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(74,128,240,${n.a})`;
+      ctx.fill();
+    }
+    animId = requestAnimationFrame(draw);
+  }
+
+  const obs = new ResizeObserver(() => { resize(); initNodes(); });
+  obs.observe(canvas.parentElement);
+  resize(); initNodes(); draw();
+})();
+
+// ─────────────────────────────────────────────────────────────
+// SCROLL REVEAL
+// ─────────────────────────────────────────────────────────────
+const rvObs = new IntersectionObserver(
+  entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in') }),
   { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
 );
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
 
-// ── URL FORM ──
-const steps = [
+// ─────────────────────────────────────────────────────────────
+// URL INPUT / SCAN ANIMATION
+// ─────────────────────────────────────────────────────────────
+const scanSteps = [
   'Fetching repository tree…',
-  'Resolving imports and exports…',
-  'Building dependency graph…',
+  'Resolving import graph…',
+  'Building dependency map…',
   'Running AI analysis…',
-  'Analysis complete — 4,821 files mapped'
+  'Generating insights…',
+  'Analysis complete',
 ];
 
-function setStatus(text, cls) {
+function setStatus(text, type) {
   const wrap = document.getElementById('urlStatus');
-  const txt = document.getElementById('urlStatusText');
-  wrap.className = 'url-status' + (cls ? ' ' + cls : '');
+  const txt  = document.getElementById('statusText');
+  wrap.className = 'url-status' + (type ? ' ' + type : '');
   txt.textContent = text;
 }
 
-function startAnalysis() {
-  const input = document.getElementById('urlInput');
-  const btn   = document.getElementById('analyzeBtn');
-  const val   = input.value.trim();
-
-  if (!val || val.split('/').length < 2) {
-    setStatus('Enter a valid repository path — e.g. vercel/next.js', 'err');
-    input.focus();
+function analyze() {
+  const val = document.getElementById('urlIn').value.trim();
+  const btn = document.getElementById('urlBtn');
+  if (!val || !val.includes('/')) {
+    setStatus('Please enter a valid repo path — e.g. facebook/react', 'err');
     return;
   }
 
   btn.disabled = true;
   btn.textContent = '…';
 
-  let i = 0;
-  setStatus(steps[0], 'scanning');
+  // Also trigger the demo scan overlay
+  triggerScan(val);
 
+  let i = 0;
+  setStatus(scanSteps[0], 'scan');
   const iv = setInterval(() => {
     i++;
-    if (i < steps.length - 1) {
-      setStatus(steps[i], 'scanning');
+    if (i < scanSteps.length - 1) {
+      setStatus(scanSteps[i], 'scan');
     } else {
       clearInterval(iv);
-      setStatus(steps[steps.length - 1], 'done');
-      btn.textContent = 'Done';
+      setStatus('Done — ' + val + ' mapped successfully', 'ok');
+      btn.disabled = false;
+      btn.textContent = 'Analyze →';
       setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Analyze';
-        setStatus('Ready to analyze any public or private repository', '');
         document.getElementById('demo').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 2000);
+      }, 600);
     }
-  }, 720);
+  }, 700);
 }
 
-document.getElementById('urlInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startAnalysis();
-});
+document.getElementById('urlIn').addEventListener('keydown', e => { if (e.key === 'Enter') analyze(); });
 
-// ── ARCHITECTURE GRAPH (DEMO) ──
-(function buildDemoGraph() {
-  const svg = document.getElementById('demoGraph');
-  if (!svg) return;
-  const ns = 'http://www.w3.org/2000/svg';
-  function el(tag, a, p) {
-    const e = document.createElementNS(ns, tag);
-    for (const [k,v] of Object.entries(a)) e.setAttribute(k, v);
-    if (p) p.appendChild(e);
-    return e;
-  }
+// ─────────────────────────────────────────────────────────────
+// GRAPH DATA
+// ─────────────────────────────────────────────────────────────
+const NODE_DATA = {
+  root: {
+    name: 'next.js (root)',
+    file: 'package.json',
+    ai: 'The root of the Next.js monorepo. Orchestrates build tooling, workspace packages, and shared configuration. Acts as the single source of truth for all package versions and workspace scripts.',
+    metrics: { files: '4,821', deps: '38 pkgs', complexity: 'Medium', type: 'Monorepo root' },
+    dependencies: [
+      { name: 'packages/next',    badge: 'b-blue',  label: 'Core' },
+      { name: 'packages/next-swc',badge: 'b-amber', label: 'Compiler' },
+      { name: 'packages/font',    badge: 'b-gray',  label: 'Utility' },
+      { name: 'examples/',        badge: 'b-gray',  label: 'Samples' },
+    ]
+  },
+  next_pkg: {
+    name: 'packages/next',
+    file: 'packages/next/package.json',
+    ai: 'The primary Next.js framework package. Contains the server runtime, router, image optimization, and build pipeline. Most of the core feature development happens here. Highest dependency count in the monorepo.',
+    metrics: { files: '2,340', deps: '612 internal', complexity: 'Very high', type: 'Core package' },
+    dependencies: [
+      { name: 'server.ts',        badge: 'b-green', label: 'Entry' },
+      { name: 'router/index.ts',  badge: 'b-blue',  label: 'Core' },
+      { name: 'build/index.ts',   badge: 'b-amber', label: 'Complex' },
+      { name: 'dist/client/',     badge: 'b-blue',  label: 'Runtime' },
+    ]
+  },
+  swc: {
+    name: 'packages/next-swc',
+    file: 'packages/next-swc/package.json',
+    ai: 'The Rust + SWC-based compiler layer for Next.js. Responsible for ultra-fast TypeScript/JSX transpilation. Contains native Rust crates compiled via NAPI-RS, making it the performance-critical path for all builds.',
+    metrics: { files: '312', deps: '8 crates', complexity: 'High', type: 'Native compiler' },
+    dependencies: [
+      { name: 'crates/next-dev',       badge: 'b-red',  label: 'Rust' },
+      { name: 'crates/next-build',     badge: 'b-red',  label: 'Rust' },
+      { name: 'crates/next-transform', badge: 'b-red',  label: 'Rust' },
+    ]
+  },
+  server: {
+    name: 'packages/next/server.ts',
+    file: 'packages/next/server.ts',
+    ai: 'Primary entry point for the Next.js server runtime. Exports the NextServer class which bootstraps request handling, middleware execution, and response rendering. This is where HTTP requests enter the Next.js system.',
+    metrics: { files: '1 file', deps: '94 imports', complexity: 'Low', type: 'Entry point' },
+    dependencies: [
+      { name: './server/next-server',    badge: 'b-blue', label: 'Server' },
+      { name: './server/base-server',    badge: 'b-blue', label: 'Base' },
+      { name: './server/request-meta',   badge: 'b-gray', label: 'Meta' },
+    ]
+  },
+  router: {
+    name: 'packages/next/router',
+    file: 'packages/next/router/index.ts',
+    ai: 'The routing subsystem for Next.js. Handles both client-side navigation and server-side routing. Manages history, prefetching, and the App Router vs Pages Router duality introduced in Next.js 13.',
+    metrics: { files: '48 files', deps: '320 links', complexity: 'High', type: 'Core module' },
+    dependencies: [
+      { name: 'navigation.ts',    badge: 'b-blue',  label: 'Nav' },
+      { name: 'prefetch.ts',      badge: 'b-blue',  label: 'Prefetch' },
+      { name: 'app-router.ts',    badge: 'b-green', label: 'App Router' },
+      { name: 'pages-router.ts',  badge: 'b-amber', label: 'Legacy' },
+    ]
+  },
+  build: {
+    name: 'packages/next/build',
+    file: 'packages/next/build/index.ts',
+    ai: 'The build pipeline orchestrator. Coordinates webpack/turbopack configuration, static generation, incremental static regeneration, and output optimization. One of the highest-complexity modules in the codebase with 614 transitive dependencies.',
+    metrics: { files: '122 files', deps: '614 links', complexity: '⚠ Very high', type: 'Build system' },
+    dependencies: [
+      { name: 'webpack/config.ts',  badge: 'b-red',  label: '614 deps' },
+      { name: 'output/index.ts',    badge: 'b-amber', label: 'Output' },
+      { name: 'swc/options.ts',     badge: 'b-blue',  label: 'SWC opts' },
+      { name: 'analysis/get-page-static-info.ts', badge: 'b-gray', label: 'Static' },
+    ]
+  },
+  examples: {
+    name: 'examples/',
+    file: 'examples/README.md',
+    ai: 'Contains ~400 example applications demonstrating Next.js features. Includes integrations with databases, authentication providers, styling libraries, and deployment platforms. Used for documentation and testing real-world patterns.',
+    metrics: { files: '~400 examples', deps: 'None (standalone)', complexity: 'Low', type: 'Examples' },
+    dependencies: [
+      { name: 'with-tailwindcss',   badge: 'b-gray', label: 'Popular' },
+      { name: 'with-vercel-ai',     badge: 'b-gray', label: 'Popular' },
+      { name: 'with-typescript',    badge: 'b-gray', label: 'Popular' },
+    ]
+  },
+  test: {
+    name: 'test/',
+    file: 'test/README.md',
+    ai: 'End-to-end and integration test suite. Uses Playwright for browser tests, Jest for unit tests, and custom test fixtures for server-rendering scenarios. Covers over 4,000 test cases across routing, rendering, and build output correctness.',
+    metrics: { files: '4,000+ tests', deps: 'Playwright, Jest', complexity: 'Medium', type: 'Test suite' },
+    dependencies: [
+      { name: 'e2e/',           badge: 'b-blue', label: 'E2E' },
+      { name: 'integration/',   badge: 'b-blue', label: 'Integration' },
+      { name: 'unit/',          badge: 'b-gray', label: 'Unit' },
+    ]
+  },
+};
 
-  // Filters
-  const defs = el('defs', {}, svg);
-  const gf = el('filter', {id:'gf', x:'-60%', y:'-60%', width:'220%', height:'220%'}, defs);
-  el('feGaussianBlur', {stdDeviation:'5', result:'b'}, gf);
-  const fm = el('feMerge', {}, gf);
-  el('feMergeNode', {in:'b'}, fm); el('feMergeNode', {in:'SourceGraphic'}, fm);
+// ─────────────────────────────────────────────────────────────
+// GRAPH RENDERING
+// ─────────────────────────────────────────────────────────────
+let selectedNode = null;
 
-  const nodes = [
-    {x:290, y:48,  r:22, lbl:'next.js',          fill:'#0d0d14', stroke:'#f2f2f4', tc:'#f2f2f4', kind:'root'},
-    {x:130, y:140, r:15, lbl:'packages/next',     fill:'#0b1526', stroke:'#4f8ef7', tc:'#93c5fd', kind:'pkg'},
-    {x:290, y:148, r:13, lbl:'packages/next-swc', fill:'#1a1209', stroke:'#f0a429', tc:'#fde68a', kind:'cpx'},
-    {x:435, y:140, r:12, lbl:'examples/',         fill:'#111115', stroke:'#44444f', tc:'#6b6b7a', kind:'dir'},
-    {x:55,  y:240, r:11, lbl:'server.ts',         fill:'#0b1a10', stroke:'#22c55e', tc:'#86efac', kind:'entry'},
-    {x:135, y:255, r:10, lbl:'router/',           fill:'#0b1526', stroke:'#4f8ef7', tc:'#93c5fd', kind:'pkg'},
-    {x:210, y:242, r:11, lbl:'build/',            fill:'#1a1209', stroke:'#f0a429', tc:'#fde68a', kind:'cpx'},
-    {x:310, y:248, r:10, lbl:'crates/',           fill:'#1a1209', stroke:'#ef4444', tc:'#fca5a5', kind:'rs'},
-    {x:400, y:255, r:9,  lbl:'test/',             fill:'#111115', stroke:'#44444f', tc:'#6b6b7a', kind:'dir'},
-    {x:470, y:242, r:8,  lbl:'docs/',             fill:'#111115', stroke:'#44444f', tc:'#6b6b7a', kind:'dir'},
-    {x:55,  y:340, r:9,  lbl:'app-router',        fill:'#0b1a10', stroke:'#22c55e', tc:'#86efac', kind:'entry'},
-    {x:135, y:345, r:8,  lbl:'pages/',            fill:'#0b1526', stroke:'#4f8ef7', tc:'#93c5fd', kind:'pkg'},
-    {x:210, y:336, r:9,  lbl:'webpack.ts',        fill:'#1a1209', stroke:'#f0a429', tc:'#fde68a', kind:'cpx'},
-    {x:375, y:344, r:8,  lbl:'e2e/',              fill:'#111115', stroke:'#44444f', tc:'#6b6b7a', kind:'dir'},
-    {x:460, y:336, r:7,  lbl:'turbopack/',        fill:'#1a1209', stroke:'#f0a429', tc:'#fde68a', kind:'cpx'},
-    {x:520, y:240, r:7,  lbl:'font/',             fill:'#111115', stroke:'#44444f', tc:'#6b6b7a', kind:'dir'},
-  ];
+const NODES = [
+  { id:'root',     x:0.50, y:0.12, r:22,  label:'next.js',         stroke:'#f0f0f5', fill:'#0e0e18', kind:'root'  },
+  { id:'next_pkg', x:0.22, y:0.34, r:16,  label:'packages/next',   stroke:'#4a80f0', fill:'#0c1525', kind:'pkg'   },
+  { id:'swc',      x:0.52, y:0.38, r:13,  label:'packages/swc',    stroke:'#e8a020', fill:'#1e1508', kind:'cpx'   },
+  { id:'examples', x:0.78, y:0.34, r:11,  label:'examples/',       stroke:'#40404d', fill:'#111118', kind:'dir'   },
+  { id:'server',   x:0.10, y:0.60, r:11,  label:'server.ts',       stroke:'#1fc562', fill:'#0b1f10', kind:'entry' },
+  { id:'router',   x:0.24, y:0.68, r:11,  label:'router/',         stroke:'#4a80f0', fill:'#0c1525', kind:'pkg'   },
+  { id:'build',    x:0.38, y:0.60, r:12,  label:'build/',          stroke:'#e8a020', fill:'#1e1508', kind:'cpx'   },
+  { id:'test',     x:0.72, y:0.68, r:10,  label:'test/',           stroke:'#40404d', fill:'#111118', kind:'dir'   },
+  { id:'swc_sub1', x:0.44, y:0.78, r:7.5, label:'crates/',         stroke:'#e85555', fill:'#1f0f0f', kind:'rs'   },
+  { id:'swc_sub2', x:0.58, y:0.58, r:7,   label:'napi/',           stroke:'#e8a020', fill:'#1e1508', kind:'dir'   },
+  { id:'client',   x:0.10, y:0.85, r:8,   label:'dist/client/',    stroke:'#4a80f0', fill:'#0c1525', kind:'pkg'   },
+  { id:'font',     x:0.66, y:0.85, r:7,   label:'font/',           stroke:'#40404d', fill:'#111118', kind:'dir'   },
+  { id:'turbo',    x:0.88, y:0.58, r:8,   label:'turbopack/',      stroke:'#e8a020', fill:'#1e1508', kind:'cpx'   },
+];
 
-  const edges = [
-    [0,1],[0,2],[0,3],[0,15],
-    [1,4],[1,5],[1,6],
-    [2,7],[3,8],[3,9],
-    [5,10],[5,11],[6,12],[8,13],[3,14]
-  ];
+const EDGES = [
+  ['root','next_pkg'],['root','swc'],['root','examples'],['root','test'],
+  ['next_pkg','server'],['next_pkg','router'],['next_pkg','build'],['next_pkg','client'],
+  ['swc','swc_sub1'],['swc','swc_sub2'],
+  ['examples','test'],['build','swc_sub1'],['test','turbo'],
+  ['router','client'],['server','router'],['swc','font'],
+];
 
-  // Background subtle grid for graph panel
-  for (let x = 0; x < 580; x += 40) {
-    el('line', {x1:x, y1:0, x2:x, y2:440, stroke:'rgba(255,255,255,0.025)', 'stroke-width':'1'}, svg);
-  }
-  for (let y = 0; y < 440; y += 40) {
-    el('line', {x1:0, y1:y, x2:580, y2:y, stroke:'rgba(255,255,255,0.025)', 'stroke-width':'1'}, svg);
-  }
+const ns = 'http://www.w3.org/2000/svg';
+function mkEl(tag, attrs, parent) {
+  const e = document.createElementNS(ns, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
 
-  // Edges
-  for (const [a,b] of edges) {
-    const na = nodes[a], nb = nodes[b];
-    el('line', {
-      x1:na.x, y1:na.y, x2:nb.x, y2:nb.y,
-      stroke: a === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.055)',
-      'stroke-width': a === 0 ? '1.2' : '1',
-      'stroke-dasharray': a === 0 ? '0' : '2 4'
-    }, svg);
-  }
+let graphBuilt = false;
+function buildGraph() {
+  if (graphBuilt) return;
+  graphBuilt = true;
 
-  // Nodes
-  for (const n of nodes) {
-    const g = el('g', {style:'cursor:pointer'}, svg);
+  const svg    = document.getElementById('graphSvg');
+  const pane   = document.getElementById('graphPane');
+  const W      = pane.clientWidth  || 580;
+  const H      = pane.clientHeight || 520;
 
-    if (n.kind === 'root') {
-      const ring = el('circle', {cx:n.x, cy:n.y, r:n.r+7, fill:'none', stroke:'rgba(242,242,244,0.08)', 'stroke-width':'1'}, g);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  // defs
+  const defs = mkEl('defs', {}, svg);
+  const filt = mkEl('filter', {id:'gf', x:'-100%', y:'-100%', width:'300%', height:'300%'}, defs);
+  mkEl('feGaussianBlur', {stdDeviation:'5', result:'b'}, filt);
+  const fm = mkEl('feMerge', {}, filt);
+  mkEl('feMergeNode', {in:'b'}, fm);
+  mkEl('feMergeNode', {in:'SourceGraphic'}, fm);
+
+  const filt2 = mkEl('filter', {id:'gf2', x:'-120%', y:'-120%', width:'340%', height:'340%'}, defs);
+  mkEl('feGaussianBlur', {stdDeviation:'8', result:'b'}, filt2);
+  const fm2 = mkEl('feMerge', {}, filt2);
+  mkEl('feMergeNode', {in:'b'}, fm2);
+  mkEl('feMergeNode', {in:'SourceGraphic'}, fm2);
+
+  // Subtle grid
+  for (let x = 0; x <= W; x += 48) mkEl('line', {x1:x, y1:0, x2:x, y2:H, stroke:'rgba(255,255,255,0.025)', 'stroke-width':'1'}, svg);
+  for (let y = 0; y <= H; y += 48) mkEl('line', {x1:0, y1:y, x2:W, y2:y, stroke:'rgba(255,255,255,0.025)', 'stroke-width':'1'}, svg);
+
+  // Map relative to absolute
+  const abs = id => {
+    const n = NODES.find(n => n.id === id);
+    return { x: n.x * W, y: n.y * H };
+  };
+
+  // Edges layer
+  const edgeLayer = mkEl('g', {id:'edgeLayer'}, svg);
+  EDGES.forEach(([a, b]) => {
+    const pa = abs(a), pb = abs(b);
+    mkEl('line', {
+      'data-a':a, 'data-b':b,
+      x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y,
+      stroke: 'rgba(255,255,255,0.055)',
+      'stroke-width':'1',
+      'stroke-dasharray': a === 'root' ? '0' : '3 5',
+    }, edgeLayer);
+  });
+
+  // Node layer
+  const nodeLayer = mkEl('g', {id:'nodeLayer'}, svg);
+  NODES.forEach(n => {
+    const px = n.x * W, py = n.y * H;
+    const g = mkEl('g', {'data-id': n.id, style:'cursor:pointer'}, nodeLayer);
+
+    // Pulse for root
+    if (n.id === 'root') {
+      const ring = mkEl('circle', {cx:px, cy:py, r:n.r+6, fill:'none', stroke:'rgba(240,240,245,0.06)', 'stroke-width':'1'}, g);
       ring.innerHTML = `
-        <animate attributeName="r" from="${n.r+5}" to="${n.r+20}" dur="3.5s" repeatCount="indefinite"/>
+        <animate attributeName="r" from="${n.r+4}" to="${n.r+20}" dur="3.5s" repeatCount="indefinite"/>
         <animate attributeName="opacity" from="0.5" to="0" dur="3.5s" repeatCount="indefinite"/>`;
     }
 
-    const c = el('circle', {
-      cx:n.x, cy:n.y, r:n.r,
-      fill:n.fill, stroke:n.stroke,
-      'stroke-width': n.kind==='root' ? '1.8' : '1',
-      filter: n.kind==='root' ? 'url(#gf)' : ''
+    const circle = mkEl('circle', {
+      cx:px, cy:py, r:n.r,
+      fill:n.fill, stroke:n.stroke, 'stroke-width': n.id==='root' ? '1.8' : '1.2',
+      filter: n.id==='root' ? 'url(#gf2)' : (n.kind==='entry' ? 'url(#gf)' : '')
     }, g);
 
-    if (n.r >= 9) {
-      el('text', {
-        x:n.x, y:n.y + n.r + 12,
-        'text-anchor':'middle', fill:n.tc,
-        'font-size': n.r >= 15 ? '9.5' : '8.5',
+    if (n.r >= 10) {
+      mkEl('text', {
+        x:px, y:py + n.r + 12,
+        'text-anchor':'middle', fill:n.stroke,
+        'font-size': n.id==='root' ? '10' : '9',
         'font-family':'SF Mono,Fira Code,Consolas,monospace',
-        opacity:'.9'
-      }, g).textContent = n.lbl;
+        opacity:'.85', 'pointer-events':'none'
+      }, g).textContent = n.label;
     }
 
-    c.addEventListener('mouseenter', () => { c.setAttribute('r', String(n.r+2)); c.setAttribute('stroke-width','2'); });
-    c.addEventListener('mouseleave', () => { c.setAttribute('r', String(n.r)); c.setAttribute('stroke-width', n.kind==='root'?'1.8':'1'); });
-  }
-})();
+    // Interactions
+    const tt    = document.getElementById('tooltip');
+    const ttN   = document.getElementById('ttName');
+    const ttM   = document.getElementById('ttMeta');
 
-// ── ANALYSIS PANEL TYPEWRITER ──
-(function typewriterAnalysis() {
-  const lines = [
-    {prompt:'→', key:'repository  ', val:'vercel/next.js', cls:''},
-    {prompt:'→', key:'language     ', val:'TypeScript (94.2%)', cls:'hl-blue'},
-    {prompt:'→', key:'packages     ', val:'38 workspace packages', cls:''},
-    {prompt:'→', key:'files        ', val:'4,821 .ts / .tsx files', cls:'hl-green'},
-    {prompt:'→', key:'dependencies ', val:'9,344 resolved', cls:''},
-    null,
-    {prompt:'→', key:'entry points ', val:'4 detected', cls:'hl-green'},
-    {prompt:'  ', key:'  packages/next/server.ts', val:'   HTTP server', cls:'hl-green'},
-    {prompt:'  ', key:'  packages/next/cli/next-dev.ts', val:'', cls:''},
-    {prompt:'  ', key:'  packages/next/cli/next-build.ts', val:'', cls:''},
-    {prompt:'  ', key:'  packages/next/dist/client/index.js', val:'', cls:''},
-    null,
-    {prompt:'⚠', key:'complexity   ', val:'3 high-risk modules', cls:'hl-amber'},
-    {prompt:'  ', key:'  packages/next/build/webpack/config.ts', val:'614 deps', cls:'hl-amber'},
-    {prompt:'  ', key:'  packages/next/server/router/index.ts', val:'320 deps', cls:'hl-amber'},
-    {prompt:'  ', key:'  packages/next/lib/router/router.ts', val:'294 deps', cls:'hl-amber'},
-    null,
-    {section:'Language distribution'},
-    {bar: {label:'TypeScript', pct:94, color:'#4f8ef7'}},
-    {bar: {label:'Rust', pct:3, color:'#ef4444'}},
-    {bar: {label:'JavaScript', pct:2, color:'#eab308'}},
-    {bar: {label:'Other', pct:1, color:'#52525b'}},
-    null,
-    {prompt:'✓', key:'analysis time', val:'3.8s', cls:'hl-green'},
-  ];
-
-  const body = document.getElementById('anaBody');
-  let i = 0;
-
-  function renderLine(line) {
-    if (line === null) {
-      const d = document.createElement('div');
-      d.className = 'ana-divider';
-      body.appendChild(d);
-      return;
-    }
-    if (line.section) {
-      const s = document.createElement('div');
-      s.className = 'ana-section';
-      s.textContent = line.section;
-      body.appendChild(s);
-      return;
-    }
-    if (line.bar) {
-      const row = document.createElement('div');
-      row.className = 'ana-bar-row';
-      row.innerHTML = `
-        <span class="ana-bar-label">${line.bar.label}</span>
-        <div class="ana-bar-track"><div class="ana-bar-fill" style="width:0%;background:${line.bar.color}"></div></div>
-        <span class="ana-bar-pct">${line.bar.pct}%</span>`;
-      body.appendChild(row);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const fill = row.querySelector('.ana-bar-fill');
-          if (fill) fill.style.width = line.bar.pct + '%';
-        });
-      });
-      return;
-    }
-    const row = document.createElement('div');
-    row.className = 'ana-line';
-    row.innerHTML = `<span class="prompt">${line.prompt}</span><span class="key">${line.key}</span><span class="val ${line.cls||''}">${line.val}</span>`;
-    body.appendChild(row);
-  }
-
-  // staggered render
-  function next() {
-    if (i >= lines.length) return;
-    renderLine(lines[i++]);
-    body.scrollTop = body.scrollHeight;
-    setTimeout(next, i < 7 ? 80 : 40);
-  }
-
-  // start when demo section enters viewport
-  const demoObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { next(); demoObs.disconnect(); }
+    g.addEventListener('mouseenter', (e) => {
+      circle.setAttribute('stroke-width', '2.5');
+      circle.setAttribute('r', String(n.r + 2.5));
+      const data = NODE_DATA[n.id];
+      if (data) {
+        ttN.textContent = data.name;
+        ttM.textContent = 'Click to inspect — ' + data.metrics.files;
+        tt.classList.add('show');
+      }
     });
-  }, { threshold: 0.3 });
-  const demoEl = document.getElementById('demo');
-  if (demoEl) demoObs.observe(demoEl);
-})();
+    g.addEventListener('mousemove', e => {
+      tt.style.left = (e.clientX + 14) + 'px';
+      tt.style.top  = (e.clientY - 10) + 'px';
+    });
+    g.addEventListener('mouseleave', () => {
+      if (n.id !== selectedNode) {
+        circle.setAttribute('stroke-width', n.id==='root' ? '1.8' : '1.2');
+        circle.setAttribute('r', String(n.r));
+      }
+      tt.classList.remove('show');
+    });
+    g.addEventListener('click', () => selectNode(n.id));
+  });
+
+  // Select first node by default
+  setTimeout(() => selectNode('server'), 400);
+}
+
+function selectNode(id) {
+  selectedNode = id;
+  const svg   = document.getElementById('graphSvg');
+  const pane  = document.getElementById('graphPane');
+  const W     = pane.clientWidth  || 580;
+  const H     = pane.clientHeight || 520;
+  const data  = NODE_DATA[id];
+  if (!data) return;
+
+  // Update label
+  document.getElementById('graphLabel').textContent = 'Inspecting: ' + data.name;
+  document.getElementById('anaFile').textContent = data.file;
+
+  // Reset all nodes visually
+  NODES.forEach(n => {
+    const g = svg.querySelector(`[data-id="${n.id}"]`);
+    if (!g) return;
+    const c = g.querySelector('circle:not([r="0"])') || g.querySelector('circle:last-of-type');
+    if (c) {
+      c.setAttribute('opacity','0.45');
+      c.setAttribute('stroke-width', n.id==='root' ? '1.8' : '1.2');
+    }
+  });
+
+  // Highlight selected node
+  const selG = svg.querySelector(`[data-id="${id}"]`);
+  if (selG) {
+    const c = selG.querySelector('circle:last-of-type');
+    if (c) { c.setAttribute('opacity','1'); c.setAttribute('stroke-width','2.5'); }
+  }
+
+  // Highlight connected edges
+  svg.querySelectorAll('[data-a],[data-b]').forEach(line => {
+    const a = line.getAttribute('data-a');
+    const b = line.getAttribute('data-b');
+    if (a === id || b === id) {
+      line.setAttribute('stroke','rgba(74,128,240,0.6)');
+      line.setAttribute('stroke-width','1.5');
+      line.removeAttribute('stroke-dasharray');
+      // Highlight connected node
+      const otherId = a === id ? b : a;
+      const otherG  = svg.querySelector(`[data-id="${otherId}"]`);
+      if (otherG) {
+        const c = otherG.querySelector('circle:last-of-type');
+        if (c) c.setAttribute('opacity','0.8');
+      }
+    } else {
+      line.setAttribute('stroke','rgba(255,255,255,0.04)');
+      line.setAttribute('stroke-width','0.8');
+    }
+  });
+
+  renderAnalysis(data);
+}
+
+function renderAnalysis(data) {
+  const scroll = document.getElementById('anaScroll');
+  scroll.style.opacity = '0';
+  scroll.style.transform = 'translateY(8px)';
+  scroll.style.transition = 'opacity .25s ease,transform .25s ease';
+
+  setTimeout(() => {
+    scroll.innerHTML = `
+      <div class="ai-box">
+        <div class="ai-box-label">AI Analysis</div>
+        <div class="ai-text" id="aiTyped"></div>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-v">${data.metrics.files}</div>
+          <div class="metric-l">Files</div>
+        </div>
+        <div class="metric">
+          <div class="metric-v">${data.metrics.deps}</div>
+          <div class="metric-l">Dependencies</div>
+        </div>
+        <div class="metric">
+          <div class="metric-v" style="font-size:13px;padding-top:4px">${data.metrics.complexity}</div>
+          <div class="metric-l">Complexity</div>
+        </div>
+        <div class="metric">
+          <div class="metric-v" style="font-size:11px;padding-top:5px;line-height:1.3">${data.metrics.type}</div>
+          <div class="metric-l">Type</div>
+        </div>
+      </div>
+      <div class="deps-title">Connected modules</div>
+      <div id="depsList"></div>
+    `;
+
+    // Animate AI text
+    const aiEl = document.getElementById('aiTyped');
+    const text = data.ai;
+    let i = 0;
+    const speed = Math.max(12, Math.floor(3000 / text.length));
+    function typeChar() {
+      if (i < text.length) { aiEl.textContent += text[i++]; requestAnimationFrame(typeChar); }
+    }
+    typeChar();
+
+    // Deps list
+    const list = document.getElementById('depsList');
+    if (list) {
+      data.dependencies.forEach((d, idx) => {
+        const item = document.createElement('div');
+        item.className = 'dep-item';
+        item.style.animationDelay = (idx * 40) + 'ms';
+        item.innerHTML = `<span class="dep-name">${d.name}</span><span class="badge ${d.badge}">${d.label}</span>`;
+        list.appendChild(item);
+      });
+    }
+
+    scroll.style.opacity = '1';
+    scroll.style.transform = 'none';
+  }, 200);
+}
+
+// ─────────────────────────────────────────────────────────────
+// SCAN OVERLAY (triggered from hero analyze)
+// ─────────────────────────────────────────────────────────────
+function triggerScan(repoPath) {
+  const ov   = document.getElementById('scanOverlay');
+  const fill = document.getElementById('scanFill');
+  const step = document.getElementById('scanStep');
+  const repo = document.getElementById('scanRepo');
+
+  repo.textContent = 'github.com/' + repoPath;
+  ov.classList.add('show');
+
+  const steps = ['Fetching tree…','Parsing AST…','Resolving imports…','Building graph…','Running AI…','Done'];
+  let pct = 0, si = 0;
+
+  const iv = setInterval(() => {
+    si++;
+    pct = Math.min(100, Math.round((si / (steps.length - 1)) * 100));
+    fill.style.width = pct + '%';
+    step.textContent = steps[si];
+    if (si >= steps.length - 1) {
+      clearInterval(iv);
+      setTimeout(() => { ov.classList.remove('show'); }, 700);
+    }
+  }, 680);
+}
+
+// ─────────────────────────────────────────────────────────────
+// BUILD GRAPH WHEN DEMO SECTION VISIBLE
+// ─────────────────────────────────────────────────────────────
+const demoObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { buildGraph(); demoObs.disconnect(); }
+  });
+}, { threshold: 0.15 });
+demoObs.observe(document.getElementById('demo'));
 </script>
 </body>
 </html>
