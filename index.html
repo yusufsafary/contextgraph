@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextGraph — Understand Any Codebase in Minutes</title>
+<meta name="description" content="Paste a GitHub repository URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.">
+<meta name="keywords" content="codebase analysis, repository visualization, architecture mapping, developer tools, code understanding">
+<meta property="og:title" content="ContextGraph — Understand Any Codebase in Minutes">
+<meta property="og:description" content="Paste a GitHub repository URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ContextGraph — Understand Any Codebase in Minutes">
+<meta name="twitter:description" content="Paste a GitHub repository URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.">
+<link rel="canonical" href="https://contextgraph.dev">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg-1: #111111;
+    --bg-2: #161616;
+    --bg-3: #1c1c1c;
+    --border: #242424;
+    --border-2: #2e2e2e;
+    --text: #ededed;
+    --text-2: #a1a1a1;
+    --text-3: #6b6b6b;
+    --accent: #f5f5f5;
+    --blue: #3b82f6;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 56px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-logo svg { flex-shrink: 0; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: var(--bg-2); }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    font-family: var(--font);
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--text);
+    color: #000;
+    border-color: var(--text);
+  }
+
+  .btn-primary:hover { background: #d4d4d4; border-color: #d4d4d4; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-2);
+    border-color: var(--border-2);
+  }
+
+  .btn-secondary:hover { color: var(--text); border-color: #444; background: var(--bg-2); }
+
+  .btn-lg {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .nav-mobile { display: none; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-mobile { display: flex; align-items: center; }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { padding: 80px 0; }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: var(--text-3);
+  }
+
+  h1, h2, h3 { letter-spacing: -0.03em; line-height: 1.15; }
+
+  h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; }
+  h2 { font-size: clamp(24px, 3.5vw, 38px); font-weight: 700; }
+  h3 { font-size: 16px; font-weight: 600; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 24px;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title { margin-bottom: 20px; }
+
+  .hero-title span {
+    background: linear-gradient(135deg, #fff 0%, #888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 420px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero-meta-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-meta-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── GRAPH VIZ ── */
+  .hero-graph {
+    position: relative;
+  }
+
+  .graph-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .graph-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+
+  .graph-dots { display: flex; gap: 6px; }
+
+  .graph-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28ca41; }
+
+  .graph-header-text {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+  }
+
+  .graph-svg-wrap {
+    padding: 8px;
+    background: var(--bg);
+  }
+
+  #repoGraph {
+    width: 100%;
+    height: 320px;
+    display: block;
+  }
+
+  /* ── FEATURES ── */
+  #features { background: var(--bg); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 48px;
+  }
+
+  .feature-card {
+    background: var(--bg-1);
+    padding: 28px 24px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+
+  .feature-card:hover { background: var(--bg-2); }
+
+  .feature-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--bg-3);
+    border: 1px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--text-2);
+  }
+
+  .feature-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.6;
+  }
+
+  /* ── HOW IT WORKS ── */
+  #how {
+    background: var(--bg-1);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 48px;
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 20px; left: calc(12.5% + 20px); right: calc(12.5% + 20px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-2), var(--border-2), transparent);
+    z-index: 0;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+
+  .step.visible { opacity: 1; transform: translateY(0); }
+
+  .step:nth-child(2) { transition-delay: 0.1s; }
+  .step:nth-child(3) { transition-delay: 0.2s; }
+  .step:nth-child(4) { transition-delay: 0.3s; }
+
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 1px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+  }
+
+  .step h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.6;
+  }
+
+  /* ── BENEFITS ── */
+  #benefits { background: var(--bg); }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 48px;
+  }
+
+  .benefit-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .benefit-card:hover {
+    border-color: var(--border-2);
+    background: var(--bg-2);
+  }
+
+  .benefit-check {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--text-3);
+  }
+
+  .benefit-text {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* ── DEMO ── */
+  #demo {
+    background: var(--bg-1);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .demo-wrap {
+    margin-top: 48px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+
+  .demo-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .demo-dots { display: flex; gap: 5px; }
+  .demo-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+  .demo-input-row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .demo-url {
+    flex: 1;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-2);
+  }
+
+  .demo-analyze-btn {
+    padding: 5px 12px;
+    background: var(--bg-3);
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .demo-analyze-btn:hover { background: var(--bg); color: var(--text); }
+
+  .demo-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 400px;
+  }
+
+  .demo-sidebar {
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .demo-sidebar-title {
+    color: var(--text-3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font);
+  }
+
+  .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .tree-item:hover { color: var(--text); }
+  .tree-item.active { color: var(--text); }
+
+  .tree-item svg { flex-shrink: 0; }
+
+  .tree-indent { padding-left: 16px; }
+
+  .demo-main {
+    background: var(--bg);
+    padding: 0;
+    overflow: auto;
+  }
+
+  .demo-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-1);
+  }
+
+  .demo-tab {
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .demo-tab.active {
+    color: var(--text);
+    border-bottom-color: var(--text);
+  }
+
+  .demo-tab:hover:not(.active) { color: var(--text-2); }
+
+  .demo-content { padding: 20px 24px; }
+
+  .demo-section-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    font-family: var(--font);
+  }
+
+  .demo-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .demo-stat {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+  }
+
+  .demo-stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    font-family: var(--font-mono);
+  }
+
+  .demo-stat-label {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+
+  .module-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .module-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+  }
+
+  .module-name {
+    font-family: var(--font-mono);
+    color: var(--text-2);
+  }
+
+  .module-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-family: var(--font);
+  }
+
+  .badge-blue { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
+  .badge-green { background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+  .badge-yellow { background: rgba(234,179,8,0.1); color: #fde047; border: 1px solid rgba(234,179,8,0.2); }
+  .badge-gray { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.2); }
+
+  /* ── TRUST ── */
+  #trust { background: var(--bg); }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 48px;
+  }
+
+  .trust-card {
+    background: var(--bg-1);
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .trust-val {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .trust-label {
+    font-size: 13px;
+    color: var(--text-3);
+  }
+
+  /* ── CTA ── */
+  #cta {
+    background: var(--bg-1);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .cta-inner h2 { margin-bottom: 16px; }
+
+  .cta-inner p {
+    color: var(--text-2);
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 0;
+    background: var(--bg);
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, auto);
+    gap: 40px;
+    align-items: start;
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-brand-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .footer-brand-desc {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.6;
+    max-width: 200px;
+  }
+
+  .footer-col h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+  .footer-col a {
+    font-size: 12px;
+    color: var(--text-3);
+    transition: color 0.15s;
+  }
+
+  .footer-col a:hover { color: var(--text-2); }
+
+  .footer-bottom {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  .footer-ticker {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-3);
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  /* ── FADE-IN ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header { max-width: 540px; }
+  .section-header p { color: var(--text-2); font-size: 16px; margin-top: 12px; line-height: 1.7; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-graph { order: -1; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .steps::before { display: none; }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    .demo-body { grid-template-columns: 1fr; }
+    .demo-sidebar { display: none; }
+    .trust-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    section { padding: 60px 0; }
+    .features-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .demo-summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .hero-meta { gap: 16px; }
+    .hero-actions { flex-direction: column; }
+    .hero-actions .btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" aria-label="ContextGraph home">
+    <!-- SVG LOGO: graph nodes forming letter C -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <!-- graph edges -->
+      <line x1="8" y1="8" x2="14" y2="14" stroke="#555" stroke-width="1.2"/>
+      <line x1="14" y1="14" x2="20" y2="8" stroke="#555" stroke-width="1.2"/>
+      <line x1="14" y1="14" x2="20" y2="20" stroke="#555" stroke-width="1.2"/>
+      <line x1="8" y1="8" x2="8" y2="20" stroke="#555" stroke-width="1.2"/>
+      <line x1="8" y1="20" x2="14" y2="14" stroke="#555" stroke-width="1.2"/>
+      <!-- C arc (outer path for the letter C silhouette) -->
+      <path d="M21 7 A10 10 0 1 0 21 21" stroke="#ededed" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <!-- graph nodes -->
+      <circle cx="8" cy="8" r="2.2" fill="#ededed"/>
+      <circle cx="8" cy="20" r="2.2" fill="#ededed"/>
+      <circle cx="20" cy="8" r="1.5" fill="#666"/>
+      <circle cx="20" cy="20" r="1.5" fill="#666"/>
+      <circle cx="14" cy="14" r="2.8" fill="#fff"/>
+    </svg>
+    ContextGraph
+  </a>
+
+  <ul class="nav-links" role="list">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#" rel="noopener">Docs</a></li>
+    <li><a href="#" rel="noopener">Pricing</a></li>
+  </ul>
+
+  <div class="nav-cta">
+    <a href="#" class="btn btn-secondary" style="display:none" id="nav-gh">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a href="#" class="btn btn-primary btn-sm">Analyze Repository</a>
+  </div>
+
+  <button class="nav-mobile btn btn-secondary" aria-label="Menu" onclick="toggleMobileMenu()">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="2" y1="4.5" x2="13" y2="4.5"/><line x1="2" y1="7.5" x2="13" y2="7.5"/><line x1="2" y1="10.5" x2="13" y2="10.5"/>
+    </svg>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobileMenu" style="display:none;position:fixed;top:56px;left:0;right:0;z-index:99;background:var(--bg-1);border-bottom:1px solid var(--border);padding:16px 24px;">
+  <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+    <li><a href="#features" onclick="closeMobileMenu()" style="display:block;padding:10px 0;font-size:14px;color:var(--text-2);border-bottom:1px solid var(--border)">Features</a></li>
+    <li><a href="#how" onclick="closeMobileMenu()" style="display:block;padding:10px 0;font-size:14px;color:var(--text-2);border-bottom:1px solid var(--border)">How it works</a></li>
+    <li><a href="#demo" onclick="closeMobileMenu()" style="display:block;padding:10px 0;font-size:14px;color:var(--text-2);border-bottom:1px solid var(--border)">Demo</a></li>
+    <li><a href="#" onclick="closeMobileMenu()" style="display:block;padding:10px 0;font-size:14px;color:var(--text-2)">Pricing</a></li>
+  </ul>
+  <div style="margin-top:16px;">
+    <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Analyze Repository</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Now analyzing 100K+ files daily
+        </div>
+        <h1 class="hero-title">
+          <span>Understand Any<br>Codebase in Minutes</span>
+        </h1>
+        <p class="hero-sub">
+          Paste a GitHub repository URL and instantly explore architecture, dependencies, entry points, and AI-generated explanations.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary btn-lg">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5.5"/><polyline points="7.5,5 7.5,7.5 9,9"/></svg>
+            Analyze Repository
+          </a>
+          <a href="#demo" class="btn btn-secondary btn-lg">
+            View Demo
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 6.5h9M7 2.5l4 4-4 4"/></svg>
+          </a>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="hero-meta-val">100K+</span>
+            <span class="hero-meta-label">Files analyzed</span>
+          </div>
+          <div style="width:1px;height:32px;background:var(--border)"></div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-val">10K+</span>
+            <span class="hero-meta-label">Repos mapped</span>
+          </div>
+          <div style="width:1px;height:32px;background:var(--border)"></div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-val">99.9%</span>
+            <span class="hero-meta-label">Accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-graph" aria-hidden="true">
+        <div class="graph-card">
+          <div class="graph-card-header">
+            <div class="graph-dots">
+              <span class="graph-dot dot-red"></span>
+              <span class="graph-dot dot-yellow"></span>
+              <span class="graph-dot dot-green"></span>
+            </div>
+            <span class="graph-header-text">vercel/next.js — architecture graph</span>
+          </div>
+          <div class="graph-svg-wrap">
+            <svg id="repoGraph" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Features</span>
+      <h2>Everything you need to<br>understand a codebase</h2>
+      <p>From architecture visualization to AI-powered explanations — built for engineers who need to move fast in unfamiliar code.</p>
+    </div>
+    <div class="features-grid fade-in">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/><line x1="4.5" y1="7" x2="4.5" y2="9"/><line x1="11.5" y1="7" x2="11.5" y2="9"/><line x1="7" y1="11.5" x2="9" y2="11.5"/></svg>
+        </div>
+        <div class="feature-title">Architecture Mapping</div>
+        <div class="feature-desc">Visualize repository structure and understand how systems connect across modules and services.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><line x1="6" y1="7.1" x2="10" y2="4.9"/><line x1="6" y1="8.9" x2="10" y2="11.1"/></svg>
+        </div>
+        <div class="feature-title">Dependency Analysis</div>
+        <div class="feature-desc">Identify relationships, bottlenecks, and hidden complexity in your dependency graph.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 4h12M2 8h8M2 12h10"/><circle cx="13" cy="8" r="2"/></svg>
+        </div>
+        <div class="feature-title">Repository Intelligence</div>
+        <div class="feature-desc">Generate instant explanations for folders, modules, and workflows — powered by AI.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="3,2 13,8 3,14"/></svg>
+        </div>
+        <div class="feature-title">Entry Point Discovery</div>
+        <div class="feature-desc">Find where applications start and how requests flow through the system from ingress to response.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 2v4l2.5 2.5"/><circle cx="8" cy="9" r="5"/></svg>
+        </div>
+        <div class="feature-title">Technical Debt Detection</div>
+        <div class="feature-desc">Highlight risk areas and maintenance hotspots before they become production incidents.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1a7 7 0 100 14A7 7 0 008 1z"/><path d="M8 5v4M8 11v.5"/></svg>
+        </div>
+        <div class="feature-title">Developer Onboarding</div>
+        <div class="feature-desc">Help new engineers understand unfamiliar repositories on day one — not day thirty.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">How it works</span>
+      <h2>From URL to insight<br>in four steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Paste GitHub URL</h3>
+        <p>Drop any public or private GitHub repository URL into the input field.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Repository scan</h3>
+        <p>ContextGraph traverses the repository tree, resolving imports, exports, and dependencies.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Generate graph</h3>
+        <p>An interactive architecture graph is rendered with nodes, edges, and cluster groupings.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Explore insights</h3>
+        <p>Click any node for AI-generated explanations, dependency chains, and risk signals.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Why engineers use it</span>
+      <h2>Built for the teams<br>inheriting complex code</h2>
+    </div>
+    <div class="benefits-grid fade-in">
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Understand legacy code faster without reading every file</span>
+      </div>
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Accelerate onboarding for new engineers joining the team</span>
+      </div>
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Reduce architecture confusion during incident response</span>
+      </div>
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Improve engineering productivity across large monorepos</span>
+      </div>
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Explore repositories visually — not just through file trees</span>
+      </div>
+      <div class="benefit-card">
+        <svg class="benefit-check" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="3,9 7,13 15,5"/></svg>
+        <span class="benefit-text">Share architectural knowledge across distributed teams</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Live demo</span>
+      <h2>See it analyze<br>vercel/next.js</h2>
+      <p>A real output from one of the most complex open-source repositories in the ecosystem.</p>
+    </div>
+    <div class="demo-wrap fade-in">
+      <div class="demo-topbar">
+        <div class="demo-dots">
+          <span class="demo-dot dot-red"></span>
+          <span class="demo-dot dot-yellow"></span>
+          <span class="demo-dot dot-green"></span>
+        </div>
+        <div class="demo-input-row">
+          <div class="demo-url">github.com/vercel/next.js</div>
+          <button class="demo-analyze-btn" onclick="animateDemoScan(this)">Analyze</button>
+        </div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-sidebar" aria-label="Repository tree">
+          <div class="demo-sidebar-title">Repository structure</div>
+          <div class="tree-item active">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M1 2a1 1 0 011-1h3.586a1 1 0 01.707.293l.414.414A1 1 0 007.414 2H10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" fill="#666"/></svg>
+            next.js
+          </div>
+          <div class="tree-indent">
+            <div class="tree-item">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M1 2a1 1 0 011-1h3.586a1 1 0 01.707.293l.414.414A1 1 0 007.414 2H10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" fill="#666"/></svg>
+              packages/
+            </div>
+            <div class="tree-indent">
+              <div class="tree-item">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2h8v8H2z"/></svg>
+                next/
+              </div>
+              <div class="tree-item">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2h8v8H2z"/></svg>
+                next-swc/
+              </div>
+              <div class="tree-item">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2h8v8H2z"/></svg>
+                font/
+              </div>
+            </div>
+            <div class="tree-item">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M1 2a1 1 0 011-1h3.586a1 1 0 01.707.293l.414.414A1 1 0 007.414 2H10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" fill="#666"/></svg>
+              examples/
+            </div>
+            <div class="tree-item">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M1 2a1 1 0 011-1h3.586a1 1 0 01.707.293l.414.414A1 1 0 007.414 2H10a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V2z" fill="#666"/></svg>
+              test/
+            </div>
+          </div>
+        </div>
+        <div class="demo-main">
+          <div class="demo-tabs" role="tablist">
+            <div class="demo-tab active" role="tab">Overview</div>
+            <div class="demo-tab" role="tab">Dependencies</div>
+            <div class="demo-tab" role="tab">Entry Points</div>
+            <div class="demo-tab" role="tab">Modules</div>
+          </div>
+          <div class="demo-content">
+            <div class="demo-section-label">Repository summary</div>
+            <div class="demo-summary-grid">
+              <div class="demo-stat">
+                <div class="demo-stat-val">4,821</div>
+                <div class="demo-stat-label">TypeScript files</div>
+              </div>
+              <div class="demo-stat">
+                <div class="demo-stat-val">38</div>
+                <div class="demo-stat-label">Packages</div>
+              </div>
+              <div class="demo-stat">
+                <div class="demo-stat-val">9,300+</div>
+                <div class="demo-stat-label">Dependencies</div>
+              </div>
+            </div>
+            <div class="demo-section-label" style="margin-top:20px;">Important modules</div>
+            <div class="module-list">
+              <div class="module-item">
+                <span class="module-name">packages/next/server.ts</span>
+                <span class="module-badge badge-blue">Entry point</span>
+              </div>
+              <div class="module-item">
+                <span class="module-name">packages/next/build/index.ts</span>
+                <span class="module-badge badge-yellow">High complexity</span>
+              </div>
+              <div class="module-item">
+                <span class="module-name">packages/next/router/index.ts</span>
+                <span class="module-badge badge-green">Core module</span>
+              </div>
+              <div class="module-item">
+                <span class="module-name">packages/next-swc/crates/</span>
+                <span class="module-badge badge-gray">Rust layer</span>
+              </div>
+              <div class="module-item">
+                <span class="module-name">packages/next/dist/client/</span>
+                <span class="module-badge badge-blue">Client runtime</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section id="trust">
+  <div class="container">
+    <div class="section-header fade-in" style="margin:0 auto;text-align:center;max-width:none;">
+      <span class="section-label" style="justify-content:center;">By the numbers</span>
+      <h2>Trusted by engineering teams<br>shipping at scale</h2>
+    </div>
+    <div class="trust-grid fade-in">
+      <div class="trust-card">
+        <div class="trust-val">100K+</div>
+        <div class="trust-label">Files Analyzed</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-val">10K+</div>
+        <div class="trust-label">Repositories Mapped</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-val">99.9%</div>
+        <div class="trust-label">Analysis Accuracy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner fade-in">
+      <h2>Stop reading codebases<br>blindly.</h2>
+      <p>Turn any repository into a knowledge map. Works on public and private GitHub repositories.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <a href="#" class="btn btn-primary btn-lg">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5.5"/><polyline points="7.5,5 7.5,7.5 9,9"/></svg>
+          Start Analyzing
+        </a>
+        <a href="#" class="btn btn-secondary btn-lg">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-name">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <line x1="8" y1="8" x2="14" y2="14" stroke="#555" stroke-width="1.2"/>
+            <line x1="14" y1="14" x2="20" y2="8" stroke="#555" stroke-width="1.2"/>
+            <line x1="14" y1="14" x2="20" y2="20" stroke="#555" stroke-width="1.2"/>
+            <line x1="8" y1="8" x2="8" y2="20" stroke="#555" stroke-width="1.2"/>
+            <line x1="8" y1="20" x2="14" y2="14" stroke="#555" stroke-width="1.2"/>
+            <path d="M21 7 A10 10 0 1 0 21 21" stroke="#ededed" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="8" cy="8" r="2.2" fill="#ededed"/>
+            <circle cx="8" cy="20" r="2.2" fill="#ededed"/>
+            <circle cx="20" cy="8" r="1.5" fill="#666"/>
+            <circle cx="20" cy="20" r="1.5" fill="#666"/>
+            <circle cx="14" cy="14" r="2.8" fill="#fff"/>
+          </svg>
+          ContextGraph
+        </div>
+        <p class="footer-brand-desc">Understand any codebase in minutes. Powered by graph analysis and AI.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Developers</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">API</a></li>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 ContextGraph. All rights reserved.</span>
+      <span class="footer-ticker">$CTGX</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── MOBILE MENU ──
+function toggleMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').style.display = 'none';
+}
+
+// ── INTERSECTION OBSERVER ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // steps trigger
+      if (e.target.parentElement && e.target.parentElement.classList.contains('steps')) return;
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// steps observer
+const stepsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.step').forEach(s => s.classList.add('visible'));
+    }
+  });
+}, { threshold: 0.2 });
+const stepsEl = document.querySelector('.steps');
+if (stepsEl) stepsObs.observe(stepsEl);
+
+// ── DEMO TABS ──
+document.querySelectorAll('.demo-tab').forEach((tab, i) => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ── DEMO SCAN ANIMATION ──
+function animateDemoScan(btn) {
+  const origText = btn.textContent;
+  btn.textContent = 'Scanning...';
+  btn.style.color = '#22c55e';
+  setTimeout(() => {
+    btn.textContent = 'Done';
+    btn.style.color = '#22c55e';
+  }, 1200);
+  setTimeout(() => {
+    btn.textContent = origText;
+    btn.style.color = '';
+  }, 2400);
+}
+
+// ── REPO GRAPH VISUALIZATION ──
+(function buildGraph() {
+  const svg = document.getElementById('repoGraph');
+  if (!svg) return;
+
+  const W = 480, H = 320;
+
+  const nodes = [
+    { id: 0, x: 240, y: 55,  label: 'next.js',          kind: 'root',    size: 22 },
+    { id: 1, x: 100, y: 130, label: 'packages/next',    kind: 'dir',     size: 16 },
+    { id: 2, x: 240, y: 130, label: 'packages/next-swc',kind: 'dir',     size: 14 },
+    { id: 3, x: 370, y: 130, label: 'examples/',        kind: 'dir',     size: 12 },
+    { id: 4, x: 55,  y: 215, label: 'server.ts',        kind: 'ts',      size: 10 },
+    { id: 5, x: 130, y: 230, label: 'router/',          kind: 'dir',     size: 10 },
+    { id: 6, x: 195, y: 215, label: 'build/',           kind: 'dir',     size: 11 },
+    { id: 7, x: 280, y: 215, label: 'crates/',          kind: 'rust',    size: 10 },
+    { id: 8, x: 350, y: 230, label: 'test/',            kind: 'dir',     size: 10 },
+    { id: 9, x: 420, y: 215, label: 'docs/',            kind: 'dir',     size: 9  },
+    { id: 10,x: 55,  y: 288, label: 'app-router',       kind: 'module',  size: 8  },
+    { id: 11,x: 130, y: 290, label: 'pages/',           kind: 'module',  size: 8  },
+    { id: 12,x: 205, y: 285, label: 'webpack.ts',       kind: 'ts',      size: 8  },
+    { id: 13,x: 355, y: 290, label: 'e2e/',             kind: 'module',  size: 8  },
+  ];
+
+  const edges = [
+    [0,1],[0,2],[0,3],
+    [1,4],[1,5],[1,6],
+    [2,7],[3,8],[3,9],
+    [5,10],[5,11],[6,12],[8,13],
+    [1,2]
+  ];
+
+  const kindColor = {
+    root:   { stroke: '#ededed', fill: '#fff',    text: '#000' },
+    dir:    { stroke: '#3b82f6', fill: '#1e2a3a', text: '#93c5fd' },
+    ts:     { stroke: '#22c55e', fill: '#132018', text: '#86efac' },
+    rust:   { stroke: '#f97316', fill: '#2a1a0f', text: '#fdba74' },
+    module: { stroke: '#a1a1a1', fill: '#1a1a1a', text: '#a1a1a1' },
+  };
+
+  function makeSvgEl(tag, attrs) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // defs
+  const defs = makeSvgEl('defs', {});
+  const blur = makeSvgEl('filter', { id: 'glow' });
+  const fe = makeSvgEl('feGaussianBlur', { stdDeviation: '3', result: 'blur' });
+  const merge = makeSvgEl('feMerge', {});
+  const mn1 = makeSvgEl('feMergeNode', { in: 'blur' });
+  const mn2 = makeSvgEl('feMergeNode', { in: 'SourceGraphic' });
+  merge.appendChild(mn1); merge.appendChild(mn2);
+  blur.appendChild(fe); blur.appendChild(merge);
+  defs.appendChild(blur);
+  svg.appendChild(defs);
+
+  // edges
+  edges.forEach(([a,b]) => {
+    const na = nodes[a], nb = nodes[b];
+    const line = makeSvgEl('line', {
+      x1: na.x, y1: na.y, x2: nb.x, y2: nb.y,
+      stroke: '#242424', 'stroke-width': '1',
+      'stroke-dasharray': a === 0 ? '0' : '3 3',
+      opacity: '0.7'
+    });
+    svg.appendChild(line);
+  });
+
+  // nodes
+  nodes.forEach((n, i) => {
+    const c = kindColor[n.kind];
+    const g = makeSvgEl('g', { 'data-id': i, style: 'cursor:default' });
+
+    // pulse ring for root
+    if (n.kind === 'root') {
+      const ring = makeSvgEl('circle', {
+        cx: n.x, cy: n.y, r: n.size + 8,
+        fill: 'none', stroke: '#555', 'stroke-width': '1', opacity: '0'
+      });
+      ring.innerHTML = `<animate attributeName="r" from="${n.size+4}" to="${n.size+16}" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="0.5" to="0" dur="2.5s" repeatCount="indefinite"/>`;
+      g.appendChild(ring);
+    }
+
+    const circle = makeSvgEl('circle', {
+      cx: n.x, cy: n.y, r: n.size,
+      fill: c.fill, stroke: c.stroke, 'stroke-width': n.kind === 'root' ? '1.5' : '1',
+      filter: n.kind === 'root' ? 'url(#glow)' : ''
+    });
+    g.appendChild(circle);
+
+    if (n.size >= 10) {
+      const lbl = makeSvgEl('text', {
+        x: n.x, y: n.y + n.size + 10,
+        'text-anchor': 'middle',
+        fill: c.text,
+        'font-size': n.size >= 16 ? '9' : '8',
+        'font-family': 'SF Mono, Fira Code, Consolas, monospace'
+      });
+      lbl.textContent = n.label;
+      g.appendChild(lbl);
+    }
+
+    // hover
+    circle.addEventListener('mouseenter', () => {
+      circle.setAttribute('stroke-width', '2');
+      circle.setAttribute('r', String(n.size + 2));
+    });
+    circle.addEventListener('mouseleave', () => {
+      circle.setAttribute('stroke-width', n.kind === 'root' ? '1.5' : '1');
+      circle.setAttribute('r', String(n.size));
+    });
+
+    svg.appendChild(g);
+  });
+})();
+</script>
+</body>
+</html>
