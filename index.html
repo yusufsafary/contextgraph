@@ -460,6 +460,11 @@ footer{border-top:1px solid var(--bd);padding:44px 0 28px}
   .kicker .kd{display:none}
   .bar-c span:first-child{display:none}
 }
+/* hide third-party injected badges */
+[data-orynth],[data-orynth-badge],#orynth-badge,.orynth-badge,.orynth-widget,
+[data-badger],[data-badger-badge],#badger-badge,.badger-badge,.badger-widget,
+iframe[src*="orynth"],iframe[src*="badger"],
+a[href*="orynth.com"],a[href*="badgerhq"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
 </head>
 <body>
