@@ -64,16 +64,28 @@ header.site .xchip .xbox {
 header.site .xchip:hover { text-decoration: none; border-color: var(--cobalt); color: var(--cobalt); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
 header.site .xchip:hover .xbox { background: var(--cobalt); }
 @media (max-width: 720px) {
-  header.site .bar { flex-wrap: wrap; row-gap: 10px; padding: 10px 14px; }
-  header.site img.mark { width: 36px; height: 36px; }
-  header.site .word { font-size: 17px; }
-  header.site .xchip { order: 2; margin-left: auto; font-size: 12px; }
+  header.site .bar {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center; column-gap: 10px; row-gap: 10px; padding: 10px 14px;
+  }
+  header.site .bar > a:first-child { grid-column: 1; grid-row: 1; min-width: 0; }
+  header.site img.mark { width: 34px; height: 34px; flex: none; }
+  header.site .word { font-size: 16px; letter-spacing: 0; white-space: nowrap; }
+  header.site .xchip { grid-column: 2; grid-row: 1; margin-left: 0; font-size: 12px; }
   header.site nav {
-    order: 3; width: 100%; margin-left: 0; flex-wrap: nowrap;
+    grid-column: 1 / -1; grid-row: 2; width: 100%; margin-left: 0; flex-wrap: nowrap;
     overflow-x: auto; gap: 18px; padding-bottom: 4px; scrollbar-width: none;
   }
   header.site nav::-webkit-scrollbar { display: none; }
   header.site nav a { font-size: 12px; white-space: nowrap; }
+}
+@media (max-width: 470px) {
+  header.site .word { font-size: 15px; }
+  header.site .xchip { font-size: 11px; }
+}
+@media (max-width: 380px) {
+  header.site .xchip { padding: 5px; }
+  header.site .xchip .xhandle { display: none; }
 }
 
 /* generic plate panel */
