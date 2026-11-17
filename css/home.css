@@ -4,12 +4,15 @@
 .hero .sub { font-size: 19px; max-width: 640px; margin-top: 18px; }
 .hero .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
 
-.platefig { margin-top: 34px; padding: 18px 18px 12px; position: relative; }
-.platefig canvas { width: 100%; height: auto; display: block; }
+.platefig { margin-top: 34px; padding: 18px 18px 12px; position: relative; transition: box-shadow 0.25s ease, transform 0.25s ease; }
+.platefig:hover { box-shadow: 7px 7px 0 rgba(20, 22, 26, 0.9); transform: translate(-2px, -2px); }
+.platefig canvas { width: 100%; height: auto; display: block; cursor: crosshair; touch-action: manipulation; }
+#fig-hover { color: var(--cobalt); min-width: 110px; text-align: center; }
 .platefig .figcap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
 
 .board { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); border: 3px solid var(--line); background: var(--paper); }
-.board .cell { padding: 18px; border-right: 2px solid var(--line); }
+.board .cell { padding: 18px; border-right: 2px solid var(--line); transition: background 0.2s ease; }
+.board .cell:hover { background: var(--paper2); }
 .board .cell:last-child { border-right: none; }
 .board .lab { font-family: "Space Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); }
 .board .val { font-family: "Archivo Black", sans-serif; font-size: clamp(24px, 4.5vw, 40px); margin-top: 6px; }
@@ -25,7 +28,8 @@
 .gauge .marks { display: flex; justify-content: space-between; font-family: "Space Mono", monospace; font-size: 12px; margin-top: 8px; color: var(--faint); }
 
 .ladder { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-.rung { border: 3px solid var(--line); padding: 18px; background: var(--paper); }
+.rung { border: 3px solid var(--line); padding: 18px; background: var(--paper); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.rung:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 rgba(20, 22, 26, 0.9); }
 .rung .n { font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--faint); text-transform: uppercase; }
 .rung .p { font-family: "Archivo Black", sans-serif; font-size: 30px; margin: 8px 0 4px; }
 .rung.free .p { color: var(--cobalt); }
@@ -38,6 +42,12 @@
   border: 3px solid var(--line); background: #fff; color: var(--ink); width: 220px;
 }
 .claimbox .result { font-family: "Space Mono", monospace; font-size: 14px; margin-top: 14px; min-height: 22px; }
+/* scroll reveals */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
 .specimen { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: start; margin-top: 18px; }
 .specimen img { width: 100%; border: 3px solid var(--line); display: block; }
 @media (max-width: 820px) { .specimen { grid-template-columns: 1fr; } .specimen img { max-width: 320px; } }
+.platefig.rv.in:hover { transform: translate(-2px, -2px); }

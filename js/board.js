@@ -1,5 +1,6 @@
-// Contextgraph live board: reads BSC state, draws FIG. 1 plate from
-// the running Graph's mint count, runs seal countdown, claim checker.
+// Contextgraph live board: reads BSC state, animates FIG. 1 plate
+// from the running Graph's mint count, runs seal countdown, claim
+// checker, count-up numbers and scroll reveals.
 const SEL = {
   currentGraph: "0x87f38529", totalNodes: "0x9592d424",
   nodesInGraph: "0x1b2ed607", participantsOf: "0xe200c857",
@@ -40,60 +41,189 @@ function tickClock() {
 }
 setInterval(tickClock, 1000);
 
-// FIG. 1: deterministic plate drawing. Node squares appear in mint
-// order, each linked to its predecessor and a near neighbour; a
-// pseudo-rare node (hash >= 970) is drawn cobalt as a Hub.
-function drawPlate(count, graph) {
+// Count-up tween for board numbers.
+const tweens = new WeakMap();
+function tweenNum(el, to, format) {
+  if (!el) return;
+  const from = tweens.get(el)?.cur ?? 0;
+  if (tweens.get(el)?.raf) cancelAnimationFrame(tweens.get(el).raf);
+  const t0 = performance.now(), dur = 700;
+  const state = { cur: from, raf: 0 };
+  tweens.set(el, state);
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    state.cur = Math.round(from + (to - from) * e);
+    el.textContent = format(state.cur);
+    if (k < 1) state.raf = requestAnimationFrame(step);
+  };
+  state.raf = requestAnimationFrame(step);
+}
+
+// FIG. 1 animated plate. Points are deterministic per Graph; nodes
+// pop in staggered, a signal pulse travels the predecessor chain,
+// Hubs breathe, and the nearest node to the pointer lights up.
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let plate = null; // {graph, pts:[{x,y,hub,birth}], cum:[], total, builtAt}
+let plateHover = -1;
+let plateRunning = false;
+
+function genPoints(count, graph) {
   const cv = $("plate-canvas");
-  if (!cv) return;
-  const ctx = cv.getContext("2d");
   const W = cv.width, H = cv.height;
-  ctx.clearRect(0, 0, W, H);
   let state = BigInt(graph * 1000003 + 77);
   const rnd = () => {
     state = (state * 6364136223846793005n + 1442695040888963407n) % (1n << 64n);
     return Number(state >> 32n) / 4294967296;
   };
-  if (count === 0) {
+  const n = Math.min(count, 240);
+  const pts = [];
+  let guard = 0;
+  while (pts.length < n && guard++ < 6000) {
+    const x = 30 + rnd() * (W - 60), y = 26 + rnd() * (H - 52);
+    if (pts.every((p) => (p.x - x) ** 2 + (p.y - y) ** 2 > 34 ** 2))
+      pts.push({ x, y, hub: (pts.length * 2654435761) % 1000 >= 970 });
+  }
+  // nearest-neighbour link per node (besides predecessor)
+  pts.forEach((p, i) => {
+    p.near = -1;
+    if (i === 0) return;
+    let bd = 1e12;
+    for (let j = 0; j < i; j++) {
+      const dd = (pts[j].x - p.x) ** 2 + (pts[j].y - p.y) ** 2;
+      if (dd < bd) { bd = dd; p.near = j; }
+    }
+  });
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++)
+    cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+  return { pts, cum, total: cum[cum.length - 1] || 0 };
+}
+
+function plateShow(count, graph) {
+  const cv = $("plate-canvas");
+  if (!cv) return;
+  const now = performance.now();
+  if (!plate || plate.graph !== graph) {
+    const g = genPoints(count, graph);
+    g.pts.forEach((p, i) => (p.birth = now + i * 22));
+    plate = { graph, count, ...g };
+  } else if (count !== plate.count) {
+    const g = genPoints(count, graph);
+    g.pts.forEach((p, i) => (p.birth = i < plate.pts.length ? plate.pts[i].birth : now + (i - plate.pts.length) * 22));
+    plate = { graph, count, ...g };
+  }
+  const cap = $("fig-nodes");
+  if (cap) cap.textContent = `NODES DRAWN · ${fmt(plate.pts.length)} OF ${fmt(count)}`;
+  if (!plateRunning) { plateRunning = true; requestAnimationFrame(plateLoop); }
+}
+
+function plateLoop(ts) {
+  const cv = $("plate-canvas");
+  if (!cv || !plate) { plateRunning = false; return; }
+  const ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height;
+  const now = REDUCED ? plate.pts.length * 22 + 1000 : ts;
+  ctx.clearRect(0, 0, W, H);
+  const { pts } = plate;
+  if (pts.length === 0) {
     ctx.fillStyle = "#5a5c62";
     ctx.font = "700 21px 'Space Mono', monospace";
     ctx.textAlign = "center";
     ctx.fillText("AWAITING FIRST NODE · GRAPH OPENS SOON", W / 2, H / 2);
     ctx.textAlign = "left";
   }
-  const n = Math.min(count, 240);
-  const pts = [];
-  let guard = 0;
-  while (pts.length < n && guard++ < 6000) {
-    const x = 30 + rnd() * (W - 60), y = 26 + rnd() * (H - 52);
-    if (pts.every((p) => (p.x - x) ** 2 + (p.y - y) ** 2 > 34 ** 2)) pts.push({ x, y });
-  }
-  ctx.lineWidth = 1.6;
+  const age = (p) => Math.max(0, Math.min(1, (now - p.birth) / 280));
+  // edges
   pts.forEach((p, i) => {
     if (i === 0) return;
-    ctx.strokeStyle = "#14161a";
+    const a = Math.min(age(p), age(pts[i - 1]));
+    if (a <= 0) return;
+    ctx.strokeStyle = `rgba(20,22,26,${0.85 * a})`;
+    ctx.lineWidth = 1.6;
     ctx.beginPath(); ctx.moveTo(pts[i - 1].x, pts[i - 1].y); ctx.lineTo(p.x, p.y); ctx.stroke();
-    let best = -1, bd = 1e12;
-    for (let j = 0; j < i; j++) {
-      const dd = (pts[j].x - p.x) ** 2 + (pts[j].y - p.y) ** 2;
-      if (dd < bd) { bd = dd; best = j; }
-    }
-    if (best >= 0 && best !== i - 1) {
-      ctx.beginPath(); ctx.moveTo(pts[best].x, pts[best].y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    if (p.near >= 0 && p.near !== i - 1) {
+      const a2 = Math.min(age(p), age(pts[p.near]));
+      if (a2 > 0) {
+        ctx.strokeStyle = `rgba(20,22,26,${0.5 * a2})`;
+        ctx.beginPath(); ctx.moveTo(pts[p.near].x, pts[p.near].y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
     }
   });
+  // travelling signal pulse along the predecessor chain
+  if (!REDUCED && plate.total > 0 && pts.length > 1) {
+    const born = pts.filter((p) => age(p) >= 1).length;
+    if (born > 1) {
+      const upto = plate.cum[born - 1];
+      const head = (ts / 26) % (upto + 260);
+      for (let k = 0; k < 16; k++) {
+        const dist = head - k * 15;
+        if (dist < 0 || dist > upto) continue;
+        let seg = 1;
+        while (seg < born - 1 && plate.cum[seg] < dist) seg++;
+        const segLen = plate.cum[seg] - plate.cum[seg - 1] || 1;
+        const f = (dist - plate.cum[seg - 1]) / segLen;
+        const x = pts[seg - 1].x + (pts[seg].x - pts[seg - 1].x) * f;
+        const y = pts[seg - 1].y + (pts[seg].y - pts[seg - 1].y) * f;
+        const r = 5.5 * (1 - k / 18);
+        ctx.fillStyle = `rgba(36,56,255,${0.95 * (1 - k / 16)})`;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        if (k === 0) { ctx.fillStyle = "#f4efe6"; ctx.fillRect(x - 2, y - 2, 4, 4); }
+      }
+    }
+  }
+  // nodes
   pts.forEach((p, i) => {
-    const hub = (i * 2654435761) % 1000 >= 970;
-    ctx.fillStyle = hub ? "#2438ff" : "#f4efe6";
-    ctx.strokeStyle = hub ? "#2438ff" : "#14161a";
+    const a = age(p);
+    if (a <= 0) return;
+    const ease = 1 - Math.pow(1 - a, 3);
+    const breathe = p.hub && !REDUCED ? 1.7 * Math.sin(ts / 420 + i * 1.7) : 0;
+    const r = (p.hub ? 9 : 6) * ease + (p.hub ? breathe * ease : 0);
+    if (r <= 0.4) return;
+    ctx.fillStyle = p.hub ? "#2438ff" : "#f4efe6";
+    ctx.strokeStyle = p.hub ? "#2438ff" : "#14161a";
     ctx.lineWidth = 2;
-    const r = hub ? 9 : 6;
     ctx.beginPath(); ctx.rect(p.x - r, p.y - r, r * 2, r * 2); ctx.fill(); ctx.stroke();
-    if (hub) { ctx.fillStyle = "#f4efe6"; ctx.fillRect(p.x - 3, p.y - 3, 6, 6); }
+    if (p.hub) { ctx.fillStyle = "#f4efe6"; ctx.fillRect(p.x - 3, p.y - 3, 6, 6); }
   });
-  const cap = $("fig-nodes");
-  if (cap) cap.textContent = `NODES DRAWN · ${fmt(pts.length)} OF ${fmt(count)}`;
+  // hover highlight
+  if (plateHover >= 0 && pts[plateHover]) {
+    const p = pts[plateHover];
+    ctx.strokeStyle = "#2438ff";
+    ctx.lineWidth = 2.6;
+    if (plateHover > 0) { ctx.beginPath(); ctx.moveTo(pts[plateHover - 1].x, pts[plateHover - 1].y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    if (p.near >= 0) { ctx.beginPath(); ctx.moveTo(pts[p.near].x, pts[p.near].y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    const r = (p.hub ? 13 : 11);
+    ctx.beginPath(); ctx.rect(p.x - r, p.y - r, r * 2, r * 2); ctx.stroke();
+  }
+  if (!REDUCED) requestAnimationFrame(plateLoop);
+  else plateRunning = false;
 }
+
+function platePointer(e) {
+  const cv = $("plate-canvas");
+  if (!cv || !plate) return;
+  const rect = cv.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * cv.width;
+  const y = ((e.clientY - rect.top) / rect.height) * cv.height;
+  let best = -1, bd = 48 ** 2;
+  plate.pts.forEach((p, i) => {
+    const dd = (p.x - x) ** 2 + (p.y - y) ** 2;
+    if (dd < bd) { bd = dd; best = i; }
+  });
+  plateHover = best;
+  const hov = $("fig-hover");
+  if (hov) {
+    if (best >= 0) {
+      const p = plate.pts[best];
+      hov.textContent = `NODE Nº ${best + 1}${p.hub ? " · HUB" : ""}`;
+    } else hov.textContent = "";
+  }
+  if (REDUCED) plateLoop(performance.now());
+}
+
+// Test/preview hook: window.CTXPLATE.show(nodes, graph)
+window.CTXPLATE = { show: plateShow };
 
 async function refresh() {
   try {
@@ -111,10 +241,10 @@ async function refresh() {
     ]);
     sealTs = end;
     if ($("b-graph")) $("b-graph").textContent = `Nº ${g}`;
-    if ($("b-nodes")) $("b-nodes").textContent = fmt(nodesToday);
-    if ($("b-agents")) $("b-agents").textContent = fmt(agents);
-    if ($("b-claimed")) $("b-claimed").textContent = fmt(claimed);
-    if ($("b-pool")) $("b-pool").textContent = `${fmt(Math.floor(Number(BigInt(poolRaw)) / 1e18))} CTX`;
+    tweenNum($("b-nodes"), nodesToday, fmt);
+    tweenNum($("b-agents"), agents, fmt);
+    tweenNum($("b-claimed"), claimed, fmt);
+    tweenNum($("b-pool"), Math.floor(Number(BigInt(poolRaw)) / 1e18), (n) => `${fmt(n)} CTX`);
     const st = $("b-status");
     if (st) {
       st.textContent = mintOpen ? "Mint open" : "Mint opens soon";
@@ -126,7 +256,7 @@ async function refresh() {
     if (fill) fill.style.width = `${Math.min(100, (agents / 100) * 100)}%`;
     const gv = $("gauge-verdict");
     if (gv) gv.textContent = agents < 25 ? "Heading to Isolated" : agents <= 100 ? "Heading to Linked" : "Heading to Networked";
-    drawPlate(nodesToday, g);
+    plateShow(nodesToday, g);
     if (g > 1) {
       const v = asInt(await rpcCall(N, SEL.verdictOf + pad32(g - 1)));
       const el = $("b-lastverdict");
@@ -164,4 +294,23 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(refresh, 30000);
   const btn = $("claim-check");
   if (btn) btn.addEventListener("click", checkClaim);
+  const cv = $("plate-canvas");
+  if (cv) {
+    cv.addEventListener("pointermove", platePointer);
+    cv.addEventListener("pointerdown", platePointer);
+    cv.addEventListener("pointerleave", () => {
+      plateHover = -1;
+      const hov = $("fig-hover");
+      if (hov) hov.textContent = "";
+      if (REDUCED) plateLoop(performance.now());
+    });
+  }
+  // Scroll reveals
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { threshold: 0.1 });
+  document.querySelectorAll("section.block, .platefig, .board, .gauge").forEach((el) => {
+    el.classList.add("rv");
+    io.observe(el);
+  });
 });
