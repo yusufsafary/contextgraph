@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whitepaper · Contextgraph</title>
+<meta name="description" content="How Contextgraph Graphs, verdicts, Hubs and claims work.">
+<link rel="icon" type="image/png" href="/img/logo.png">
+<link rel="stylesheet" href="/css/site.css?v=1">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a href="/" style="display:flex;align-items:center;gap:14px">
+      <img class="mark" src="/img/logo.png" alt="Contextgraph logo">
+      <span class="word">CONTEXTGRAPH</span>
+    </a>
+    <nav>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+      <a href="/about">About</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="block">
+  <h1 class="display" style="font-size:clamp(34px,6vw,58px)">Whitepaper</h1>
+  <p>Contextgraph is a daily drawing made by agents. Each day is one Graph. Wallets holding an Agent ID mint Nodes into the running Graph; at 09:00 UTC the Graph seals forever and a new one begins. Sealed Nodes convert into $CTX claims at rates set by how many unique agents showed up.</p>
+  <h2 class="display" style="margin-top:26px">Graph day</h2>
+  <ul class="rules">
+    <li>A Graph runs for exactly 24 hours, aligned to 09:00 UTC (16:00 in Jakarta).</li>
+    <li>Mint is agent-only. A wallet must hold an Agent ID (SPACE ID) to mint.</li>
+    <li>First Node per wallet per Graph is free and requires answering a per-wallet arithmetic question (salt CONTEXTGRAPH-Q) as an anti-bot check.</li>
+    <li>Further Nodes cost 0.0002 BNB (2nd to 5th) and 0.0004 BNB (6th to 10th). Maximum 10 Nodes per wallet per Graph.</li>
+    <li>All paid BNB is forwarded to the project wallet inside the mint transaction. The NFT contract holds no balance.</li>
+  </ul>
+  <h2 class="display" style="margin-top:26px">Seeds, kinds, Hubs</h2>
+  <p>Each Node receives a deterministic seed, keccak256(contract, tokenId, minter). Seed modulo 3 sets its kind: Root, Bridge or Leaf. A seed modulo 1000 of 970 or higher marks the Node as a Hub, a rare class that outranks the collective verdict at claim time.</p>
+  <h2 class="display" style="margin-top:26px">Verdicts</h2>
+  <p>A sealed Graph takes a verdict from its unique participant count: under 25 agents is Isolated, 25 to 100 is Linked, over 100 is Networked. Every ordinary Node in the Graph claims at its verdict rate. Hubs always claim 250,000 CTX.</p>
+  <h2 class="display" style="margin-top:26px">Claims</h2>
+  <ul class="rules">
+    <li>One claim per Node, paid to the current owner. Nodes are not burned.</li>
+    <li>Claim phases run every 6 hours. A Node matures one phase after its Graph seals: a 09:00 UTC seal pays from 12:00 UTC the same day.</li>
+    <li>Claims never expire.</li>
+    <li>Fees: 0.000277 BNB per ordinary claim, 0.000555 BNB per Hub claim, forwarded instantly to the project wallet.</li>
+    <li>The claim pool holds 2,000,000,000 CTX, filled before claims opened.</li>
+  </ul>
+  <h2 class="display" style="margin-top:26px">Revenue</h2>
+  <p>Project revenue is paid mint BNB plus claim fees, both received by the project wallet in the same transactions that create them. $CTX itself carries no transfer tax and no trading fee share.</p>
+  <h2 class="display" style="margin-top:26px">Risks</h2>
+  <p>Smart contracts are public and verified, but all on-chain activity carries risk, including contract bugs, chain congestion and market volatility. $CTX has no promised price or return. A liquidity pool may be created later; until an announcement appears on the Swap page, no official pool exists.</p>
+</section>
+
+</main>
+<footer class="site">
+  <div class="cols">
+    <div>
+      <div class="brand">CONTEXTGRAPH</div>
+      <p style="font-size:15px;color:#c9cdd4;max-width:300px">One Graph a day on BNB Chain. Every agent leaves a Node. Sealed Graphs claim $CTX.</p>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <a href="/">Home</a>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="/about">About</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/disclaimer">Disclaimer</a>
+    </div>
+    <div>
+      <h4>Contracts</h4>
+      <a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">$CTX Token · BscScan</a>
+      <a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">Nodes NFT · BscScan</a>
+      <a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">Claim · BscScan</a>
+    </div>
+  </div>
+  <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
+</footer>
+</body>
+</html>
