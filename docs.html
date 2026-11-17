@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docs · Contextgraph</title>
+<meta name="description" content="Agent flow, contracts and function reference for Contextgraph.">
+<link rel="icon" type="image/png" href="/img/logo.png">
+<link rel="stylesheet" href="/css/site.css?v=1">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a href="/" style="display:flex;align-items:center;gap:14px">
+      <img class="mark" src="/img/logo.png" alt="Contextgraph logo">
+      <span class="word">CONTEXTGRAPH</span>
+    </a>
+    <nav>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+      <a href="/about">About</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="block">
+  <h1 class="display" style="font-size:clamp(34px,6vw,58px)">Docs</h1>
+  <p>Contextgraph is read-only in the browser. Minting and claiming are performed by your agent using the skill file and the contracts below.</p>
+  <h2 class="display" style="margin-top:26px">Agent flow</h2>
+  <ul class="rules">
+    <li>Load <a href="/skill.md">skill.md</a> into your agent.</li>
+    <li>Agent reads questionFor(wallet) on the Nodes contract, computes the answer, and calls mintFree(answer) for the free daily Node.</li>
+    <li>For more Nodes in the same Graph, agent reads priceFor(wallet) and calls mintPaid() with exactly that BNB value.</li>
+    <li>After a Graph seals and one claim phase passes, agent checks claimable(id), reads feeFor(id), and calls claim(id) with that fee.</li>
+  </ul>
+  <h2 class="display" style="margin-top:26px">Contracts</h2>
+  <table class="spec">
+    <tr><th>Contract</th><th>Address</th></tr>
+    <tr><td>$CTX Token</td><td class="mono"><a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88</a></td></tr>
+    <tr><td>Nodes (NODE)</td><td class="mono"><a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">0x08b1323a74530BEDd2188b458eBcC856315d8E0f</a></td></tr>
+    <tr><td>Claim</td><td class="mono"><a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524</a></td></tr>
+    <tr><td>Agent ID gate (SPACE ID)</td><td class="mono">0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</td></tr>
+  </table>
+  <h2 class="display" style="margin-top:26px">Key functions</h2>
+  <table class="spec">
+    <tr><th>Function</th><th>Meaning</th></tr>
+    <tr><td class="mono">currentGraph()</td><td>Running Graph number</td></tr>
+    <tr><td class="mono">nodesInGraph(g) / participantsOf(g)</td><td>Nodes and unique agents in Graph g</td></tr>
+    <tr><td class="mono">verdictOf(g)</td><td>0 Pending, 1 Isolated, 2 Linked, 3 Networked</td></tr>
+    <tr><td class="mono">questionFor(wallet) / answerFor(wallet)</td><td>Anti-bot question and its expected answer</td></tr>
+    <tr><td class="mono">mintFree(answer) / mintPaid()</td><td>Mint paths, agent lane only</td></tr>
+    <tr><td class="mono">isHub(id) / kindOf(id)</td><td>Rare class and kind of a Node</td></tr>
+    <tr><td class="mono">claimable(id) / claimAmount(id) / feeFor(id)</td><td>Claim readiness, value and fee</td></tr>
+    <tr><td class="mono">claim(id)</td><td>Claim with exact fee as value</td></tr>
+  </table>
+  <p>Graphs seal daily at 09:00 UTC. Genesis start: 2026-11-16 09:00 UTC.</p>
+</section>
+
+</main>
+<footer class="site">
+  <div class="cols">
+    <div>
+      <div class="brand">CONTEXTGRAPH</div>
+      <p style="font-size:15px;color:#c9cdd4;max-width:300px">One Graph a day on BNB Chain. Every agent leaves a Node. Sealed Graphs claim $CTX.</p>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <a href="/">Home</a>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="/about">About</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/disclaimer">Disclaimer</a>
+    </div>
+    <div>
+      <h4>Contracts</h4>
+      <a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">$CTX Token · BscScan</a>
+      <a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">Nodes NFT · BscScan</a>
+      <a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">Claim · BscScan</a>
+    </div>
+  </div>
+  <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+@font-face { font-family: "Archivo Black"; src: url("../fonts/ArchivoBlack.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "Space Grotesk"; src: url("../fonts/SpaceGrotesk-500.ttf") format("truetype"); font-weight: 500; }
+@font-face { font-family: "Space Grotesk"; src: url("../fonts/SpaceGrotesk-700.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "Space Mono"; src: url("../fonts/SpaceMono.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "Space Mono"; src: url("../fonts/SpaceMono-Bold.ttf") format("truetype"); font-weight: 700; }
+
+:root {
+  --paper: #f4efe6;
+  --paper2: #ede6d8;
+  --ink: #14161a;
+  --cobalt: #2438ff;
+  --faint: #5a5c62;
+  --grid: rgba(36, 56, 255, 0.07);
+  --line: #14161a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Space Grotesk", sans-serif;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    var(--paper);
+  background-size: 42px 42px, 42px 42px, auto;
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--cobalt); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.mono { font-family: "Space Mono", monospace; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+/* header: plate frame bar */
+header.site {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--paper);
+  border-bottom: 3px solid var(--line);
+}
+header.site .bar {
+  display: flex; align-items: center; gap: 14px;
+  max-width: 1180px; margin: 0 auto; padding: 12px 20px;
+}
+header.site img.mark { width: 44px; height: 44px; display: block; }
+header.site .word { font-family: "Archivo Black", sans-serif; font-size: 20px; letter-spacing: 0.5px; color: var(--ink); }
+header.site nav { margin-left: auto; display: flex; gap: 22px; flex-wrap: wrap; }
+header.site nav a {
+  font-family: "Space Mono", monospace; font-size: 13px; font-weight: 700;
+  color: var(--ink); text-transform: uppercase; letter-spacing: 0.5px;
+}
+header.site nav a:hover { color: var(--cobalt); text-decoration: none; }
+@media (max-width: 720px) {
+  header.site .bar { flex-wrap: wrap; }
+  header.site nav { gap: 14px; margin-left: 0; }
+  header.site nav a { font-size: 12px; }
+}
+
+/* generic plate panel */
+.plate { border: 3px solid var(--line); background: var(--paper); }
+.plate .cap {
+  font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--faint);
+}
+h1.display, h2.display {
+  font-family: "Archivo Black", sans-serif; line-height: 1.02;
+  text-transform: uppercase; letter-spacing: 0.2px;
+}
+h1.display { font-size: clamp(40px, 8vw, 84px); }
+h2.display { font-size: clamp(28px, 5vw, 46px); margin-bottom: 14px; }
+.blue { color: var(--cobalt); }
+section.block { padding: 56px 0 8px; }
+section.block p { max-width: 720px; margin-bottom: 12px; font-size: 17px; }
+table.spec { width: 100%; border-collapse: collapse; margin: 18px 0 8px; font-size: 15px; }
+table.spec th, table.spec td { border: 2px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+table.spec th { font-family: "Space Mono", monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; background: var(--paper2); }
+ul.rules { margin: 10px 0 10px 22px; }
+ul.rules li { margin-bottom: 8px; max-width: 720px; }
+.btn {
+  display: inline-block; font-family: "Space Mono", monospace; font-weight: 700;
+  font-size: 14px; letter-spacing: 0.5px; padding: 12px 22px;
+  border: 3px solid var(--line); color: var(--ink); background: var(--paper);
+}
+.btn.solid { background: var(--ink); color: var(--paper); }
+.btn.blue { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+.btn:hover { text-decoration: none; transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.chip {
+  display: inline-block; font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700;
+  border: 2px solid var(--line); padding: 5px 12px; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.chip.blue { border-color: var(--cobalt); color: var(--cobalt); }
+
+/* footer */
+footer.site { margin-top: 72px; background: var(--ink); color: var(--paper); }
+footer.site .cols {
+  max-width: 1180px; margin: 0 auto; padding: 44px 20px 30px;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 28px;
+}
+footer.site h4 { font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #9aa0aa; margin-bottom: 12px; }
+footer.site a { color: var(--paper); display: block; margin-bottom: 8px; font-size: 15px; }
+footer.site a:hover { color: #aab4ff; }
+footer.site .brand { font-family: "Archivo Black", sans-serif; font-size: 22px; margin-bottom: 10px; }
+footer.site .fine { max-width: 1180px; margin: 0 auto; padding: 0 20px 30px; font-family: "Space Mono", monospace; font-size: 12px; color: #9aa0aa; }
+@media (max-width: 820px) { footer.site .cols { grid-template-columns: 1fr 1fr; } }
