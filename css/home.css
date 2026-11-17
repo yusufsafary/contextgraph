@@ -161,4 +161,4 @@
   padding: 10px 16px; display: flex; align-items: center; justify-content: center; gap: 12px;
 }
 .announce .sq { width: 7px; height: 7px; background: var(--cobalt); flex: none; }
-@media (max-width: 480px) { .announce { font-size: 11px; letter-spacing: 0.8px; padding: 9px 12px; } }
+@media (max-width: 480px) { .announce { font-size: 10px; letter-spacing: 0.5px; padding: 8px 10px; gap: 8px; } .announce .sq { width: 6px; height: 6px; } }
