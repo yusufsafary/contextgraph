@@ -8,7 +8,7 @@
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=4">
-<link rel="stylesheet" href="/css/home.css?v=2">
+<link rel="stylesheet" href="/css/home.css?v=3">
 </head>
 <body>
 <header class="site">
@@ -57,19 +57,24 @@
   </div>
 </section>
 
+
+<div class="marquee rv" aria-hidden="true"><div class="track"><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div></div></div>
+
 <section class="block" id="mint">
+  <div class="sec-cap">§ 01 · Mint</div>
   <h2 class="display">Mint a Node</h2>
   <p>Minting runs through your agent, gated by Agent ID ownership and a small anti-bot question. One free Node per wallet per Graph, then a BNB ladder. Paid BNB moves to the project wallet inside the same transaction.</p>
   <div class="ladder">
-    <div class="rung free"><div class="n">Node 1 · per Graph</div><div class="p">FREE</div><div>Agent ID + anti-bot answer</div></div>
-    <div class="rung"><div class="n">Nodes 2 to 5</div><div class="p">0.0002 BNB</div><div>Per Node, paid exactly</div></div>
-    <div class="rung"><div class="n">Nodes 6 to 10</div><div class="p">0.0004 BNB</div><div>Per Node · max 10 per Graph</div></div>
+    <div class="rung free"><div class="n">Node 1 · per Graph</div><span class="ghost">01</span><div class="p">FREE</div><div>Agent ID + anti-bot answer</div></div>
+    <div class="rung"><div class="n">Nodes 2 to 5</div><span class="ghost">02</span><div class="p">0.0002 BNB</div><div>Per Node, paid exactly</div></div>
+    <div class="rung"><div class="n">Nodes 6 to 10</div><span class="ghost">03</span><div class="p">0.0004 BNB</div><div>Per Node · max 10 per Graph</div></div>
   </div>
   <p style="margin-top:16px">Point your agent at the skill file and it handles question, mint and claim for you.</p>
   <p><a class="btn solid" href="/skill.md">Open skill file</a> <a class="btn" href="/docs">Read docs</a></p>
 </section>
 
 <section class="block" id="claim">
+  <div class="sec-cap">§ 02 · Claim</div>
   <h2 class="display">Claim $CTX</h2>
   <p>Each sealed Node claims once, following the verdict its Graph sealed with. Claims mature one claim phase (6 hours) after the seal, so a Graph sealing at 09:00 UTC pays from 12:00 UTC the same day. Nodes are never burned. <span id="c-status">Reading claim status…</span></p>
   <table class="spec">
@@ -85,8 +90,16 @@
     <div class="cell"><div class="lab">Last sealed</div><div class="val small" id="b-lastverdict">···</div></div>
     <div class="cell"><div class="lab">Claim phase</div><div class="val small">6 hours</div></div>
   </div>
+  <div class="phases" id="phases">
+    <div class="phase"><div class="ph">Phase A</div><div class="pt">00:00 UTC</div></div>
+    <div class="phase"><div class="ph">Phase B</div><div class="pt">06:00 UTC</div></div>
+    <div class="phase"><div class="ph">Phase C</div><div class="pt">12:00 UTC</div></div>
+    <div class="phase"><div class="ph">Phase D</div><div class="pt">18:00 UTC</div></div>
+  </div>
+  <p class="phasenote" id="phase-note">A sealed Node matures one phase after its Graph seals.</p>
   <div class="plate claimbox">
     <div class="cap">Claim checker · read-only</div>
+    <div class="stamp" id="claim-stamp">CLAIMABLE</div>
     <div class="row">
       <input id="claim-id" type="number" min="1" placeholder="Node number">
       <button class="btn blue" id="claim-check">Check Node</button>
@@ -96,9 +109,19 @@
 </section>
 
 <section class="block">
+  <div class="sec-cap">§ 03 · Specimen</div>
   <h2 class="display">A Node, up close</h2>
   <div class="specimen">
-    <img src="/img/node/7.png" alt="Contextgraph Node number 7 artwork">
+    <div>
+      <div class="frame"><img id="spec-img" src="/img/node/7.png" alt="Contextgraph Node artwork"></div>
+      <div class="thumbs">
+        <button class="thumb on" data-id="7" aria-label="Node 7"><img src="/img/node/7.png" alt=""></button>
+        <button class="thumb" data-id="23" aria-label="Node 23"><img src="/img/node/23.png" alt=""></button>
+        <button class="thumb" data-id="62" aria-label="Node 62"><img src="/img/node/62.png" alt=""></button>
+        <button class="thumb" data-id="100" aria-label="Node 100"><img src="/img/node/100.png" alt=""></button>
+      </div>
+      <div class="speccap" id="spec-cap">NODE Nº 7 · LEAF</div>
+    </div>
     <div>
       <p>Every Node is a plate of its own: a small constellation drawn on graph paper, its subject square marked, its kind printed in the margin. Kind follows the seed: Root, Bridge or Leaf. One Node in a thousand turns Hub and claims above every verdict.</p>
       <p>Artwork and metadata are served from this domain, one file per Node, revealed instantly at mint.</p>
@@ -107,7 +130,7 @@
   </div>
 </section>
 <script src="/js/config.js?v=1"></script>
-<script src="/js/board.js?v=2"></script>
+<script src="/js/board.js?v=3"></script>
 
 </main>
 <footer class="site">

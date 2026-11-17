@@ -250,6 +250,8 @@ async function refresh() {
       st.textContent = mintOpen ? "Mint open" : "Mint opens soon";
       st.className = "chip" + (mintOpen ? " blue" : "");
     }
+    const mq = $("mq-graph");
+    if (mq) mq.textContent = `Nº ${g}`;
     const cs = $("c-status");
     if (cs) cs.textContent = claimOpen ? "Claims open" : "Claims open after first seal";
     const fill = $("gauge-fill");
@@ -266,11 +268,22 @@ async function refresh() {
   } catch (e) { /* keep last good render */ }
 }
 
+function setStamp(ok) {
+  const stamp = $("claim-stamp");
+  if (!stamp) return;
+  if (ok === null) { stamp.className = "stamp"; return; }
+  stamp.textContent = ok ? "CLAIMABLE" : "NOT MATURE";
+  stamp.className = "stamp";
+  void stamp.offsetWidth; // restart animation
+  stamp.className = "stamp show" + (ok ? " ok" : "");
+}
+
 async function checkClaim() {
   const out = $("claim-result");
   const id = parseInt(($("claim-id").value || "").trim(), 10);
-  if (!id || id < 1) { out.textContent = "Enter a Node number first."; return; }
+  if (!id || id < 1) { out.textContent = "Enter a Node number first."; setStamp(null); return; }
   out.textContent = "Reading chain…";
+  setStamp(null);
   try {
     const C = CONFIG.claim.address, N = CONFIG.nodes.address;
     const [ok, amount, fee, hub] = await Promise.all([
@@ -284,8 +297,38 @@ async function checkClaim() {
     out.textContent = ok
       ? `Node #${id}${hub ? " (Hub)" : ""} is claimable now: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claim through your agent.`
       : `Node #${id}${hub ? " (Hub)" : ""} is not claimable yet. Value when mature: ${ctxAmt} CTX · fee ${feeBnb} BNB.`;
+    setStamp(ok);
   } catch (e) {
     out.textContent = "Node not found or chain read failed. Check the number and retry.";
+    setStamp(null);
+  }
+}
+
+// Claim phase strip: highlight the current 6-hour UTC phase.
+function tickPhases() {
+  const wrap = $("phases");
+  if (!wrap) return;
+  const idx = Math.floor(new Date().getUTCHours() / 6);
+  wrap.querySelectorAll(".phase").forEach((el, i) => el.classList.toggle("on", i === idx));
+  const note = $("phase-note");
+  if (note) note.textContent = `Current claim phase · ${"ABCD"[idx]} · a sealed Node matures one phase after its Graph seals.`;
+}
+
+// Specimen gallery: swap the large plate, caption from metadata.
+async function showSpecimen(id, btn) {
+  const img = $("spec-img");
+  if (!img) return;
+  document.querySelectorAll(".thumb").forEach((t) => t.classList.toggle("on", t === btn));
+  img.classList.add("swap");
+  setTimeout(() => { img.src = `/img/node/${id}.png`; img.onload = () => img.classList.remove("swap"); }, 180);
+  const cap = $("spec-cap");
+  if (cap) {
+    cap.textContent = `NODE Nº ${id}`;
+    try {
+      const meta = await (await fetch(`/metadata/node/${id}.json`)).json();
+      const traits = Object.fromEntries((meta.attributes || []).map((a) => [a.trait_type, a.value]));
+      cap.textContent = `NODE Nº ${id} · ${(traits.Kind || "").toUpperCase()}${traits.Class === "Hub" ? " · HUB" : ""}`;
+    } catch (e) { /* keep plain caption */ }
   }
 }
 
@@ -305,11 +348,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (REDUCED) plateLoop(performance.now());
     });
   }
+  tickPhases();
+  setInterval(tickPhases, 60000);
+  document.querySelectorAll(".thumb").forEach((btn) =>
+    btn.addEventListener("click", () => showSpecimen(btn.dataset.id, btn)));
   // Scroll reveals
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
   }), { threshold: 0.1 });
-  document.querySelectorAll("section.block, .platefig, .board, .gauge").forEach((el) => {
+  document.querySelectorAll(".rv, section.block, .platefig, .board, .gauge, .ladder .rung, .phases, .specimen").forEach((el) => {
     el.classList.add("rv");
     io.observe(el);
   });
