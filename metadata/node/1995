@@ -1,0 +1,15 @@
+{
+ "name": "Contextgraph Node #1995",
+ "description": "A Node in a daily Contextgraph on BNB Chain. One Graph a day, sealed at 09:00 UTC. Sealed Nodes claim $CTX.",
+ "image": "https://contextgraph.art/img/node/1995.png",
+ "attributes": [
+  {
+   "trait_type": "Kind",
+   "value": "Root"
+  },
+  {
+   "trait_type": "Class",
+   "value": "Node"
+  }
+ ]
+}
