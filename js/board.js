@@ -47,7 +47,7 @@ function tweenNum(el, to, format) {
   if (!el) return;
   const from = tweens.get(el)?.cur ?? 0;
   if (tweens.get(el)?.raf) cancelAnimationFrame(tweens.get(el).raf);
-  const t0 = performance.now(), dur = 700;
+  const t0 = performance.now(), dur = 950;
   const state = { cur: from, raf: 0 };
   tweens.set(el, state);
   const step = (t) => {

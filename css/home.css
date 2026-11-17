@@ -4,14 +4,14 @@
 .hero .sub { font-size: 19px; max-width: 640px; margin-top: 18px; }
 .hero .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
 
-.platefig { margin-top: 34px; padding: 18px 18px 12px; position: relative; transition: box-shadow 0.25s ease, transform 0.25s ease; }
+.platefig { margin-top: 34px; padding: 18px 18px 12px; position: relative; transition: box-shadow 0.45s cubic-bezier(.22,1,.36,1), transform 0.45s cubic-bezier(.22,1,.36,1); }
 .platefig:hover { box-shadow: 7px 7px 0 rgba(20, 22, 26, 0.9); transform: translate(-2px, -2px); }
 .platefig canvas { width: 100%; height: auto; display: block; cursor: crosshair; touch-action: manipulation; }
 #fig-hover { color: var(--cobalt); min-width: 110px; text-align: center; }
 .platefig .figcap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
 
 .board { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); border: 3px solid var(--line); background: var(--paper); }
-.board .cell { padding: 18px; border-right: 2px solid var(--line); transition: background 0.2s ease; }
+.board .cell { padding: 18px; border-right: 2px solid var(--line); transition: background 0.35s cubic-bezier(.22,1,.36,1); }
 .board .cell:hover { background: var(--paper2); }
 .board .cell:last-child { border-right: none; }
 .board .lab { font-family: "Space Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); }
@@ -24,11 +24,11 @@
 
 .gauge { margin-top: 26px; padding: 20px; }
 .gauge .track { height: 22px; border: 3px solid var(--line); margin-top: 12px; position: relative; background: var(--paper); }
-.gauge .fill { height: 100%; background: var(--cobalt); width: 0%; transition: width 0.8s ease; }
+.gauge .fill { height: 100%; background: var(--cobalt); width: 0%; transition: width 1.15s cubic-bezier(.22,1,.36,1); }
 .gauge .marks { display: flex; justify-content: space-between; font-family: "Space Mono", monospace; font-size: 12px; margin-top: 8px; color: var(--faint); }
 
 .ladder { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-.rung { border: 3px solid var(--line); padding: 18px; background: var(--paper); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.rung { border: 3px solid var(--line); padding: 18px; background: var(--paper); transition: transform 0.45s cubic-bezier(.22,1,.36,1), box-shadow 0.45s cubic-bezier(.22,1,.36,1), border-color 0.45s cubic-bezier(.22,1,.36,1); }
 .rung:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 rgba(20, 22, 26, 0.9); }
 .rung .n { font-family: "Space Mono", monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--faint); text-transform: uppercase; }
 .rung .p { font-family: "Archivo Black", sans-serif; font-size: 30px; margin: 8px 0 4px; }
@@ -112,7 +112,7 @@
 
 /* claim phases strip */
 .phases { display: grid; grid-template-columns: repeat(4, 1fr); border: 3px solid var(--line); margin-top: 18px; background: var(--paper); }
-.phase { padding: 13px 15px; border-right: 2px solid var(--line); transition: background 0.4s ease, color 0.4s ease; }
+.phase { padding: 13px 15px; border-right: 2px solid var(--line); transition: background 0.6s cubic-bezier(.22,1,.36,1), color 0.6s cubic-bezier(.22,1,.36,1); }
 .phase:last-child { border-right: none; }
 .phase .ph { font-family: "Space Mono", monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); }
 .phase .pt { font-family: "Archivo Black", sans-serif; font-size: 19px; margin-top: 4px; }
@@ -135,12 +135,12 @@
 
 /* specimen gallery */
 .specimen .frame { border: 3px solid var(--line); overflow: hidden; background: var(--paper); }
-.specimen .frame img { width: 100%; display: block; transition: opacity 0.3s ease; animation: kb 16s ease-in-out infinite alternate; }
+.specimen .frame img { width: 100%; display: block; transition: opacity 0.5s cubic-bezier(.22,1,.36,1); animation: kb 18s ease-in-out infinite alternate; }
 .specimen .frame img.swap { opacity: 0.15; }
 @keyframes kb { from { transform: scale(1); } to { transform: scale(1.07) translate(-0.8%, -0.8%); } }
 @media (prefers-reduced-motion: reduce) { .specimen .frame img { animation: none; } }
 .thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-.thumb { border: 3px solid var(--line); padding: 0; background: var(--paper); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.thumb { border: 3px solid var(--line); padding: 0; background: var(--paper); cursor: pointer; transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s cubic-bezier(.22,1,.36,1), border-color 0.35s cubic-bezier(.22,1,.36,1); }
 .thumb img { width: 100%; display: block; }
 .thumb:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
 .thumb.on { border-color: var(--cobalt); box-shadow: 3px 3px 0 var(--cobalt); }
