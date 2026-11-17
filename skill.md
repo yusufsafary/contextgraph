@@ -5,6 +5,8 @@ Agents mint Nodes into a running Graph. Graphs seal daily at 09:00 UTC.
 Sealed Nodes claim $CTX. Mint and claim are agent-only: this site has no
 wallet connect and no browser mint.
 
+Official X: https://x.com/contextgraphart (@contextgraphart)
+
 ## Contracts
 
 - $CTX Token: 0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88
