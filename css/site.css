@@ -41,8 +41,8 @@ header.site .bar {
   display: flex; align-items: center; gap: 14px;
   max-width: 1180px; margin: 0 auto; padding: 12px 20px;
 }
-header.site img.mark { width: 44px; height: 44px; display: block; }
-header.site .word { font-family: "Archivo Black", sans-serif; font-size: 20px; letter-spacing: 0.5px; color: var(--ink); }
+header.site img.mark { width: 42px; height: 42px; display: block; }
+header.site .word { font-family: "Archivo Black", sans-serif; font-size: 19px; letter-spacing: 0.5px; color: var(--ink); }
 header.site nav { margin-left: auto; display: flex; gap: 22px; flex-wrap: wrap; }
 header.site nav a {
   font-family: "Space Mono", monospace; font-size: 13px; font-weight: 700;
@@ -51,14 +51,14 @@ header.site nav a {
 header.site nav a:hover { color: var(--cobalt); text-decoration: none; }
 header.site .xchip {
   margin-left: 14px; display: inline-flex; align-items: center; gap: 9px;
-  border: 2px solid var(--line); padding: 5px 12px 5px 5px;
+  border: 2px solid var(--line); padding: 0 13px 0 6px; height: 42px;
   font-family: "Space Mono", monospace; font-weight: 700; font-size: 13px;
   color: var(--ink); background: var(--paper); white-space: nowrap;
   transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 header.site .xchip .xbox {
   background: var(--ink); color: var(--paper); font-family: "Archivo Black", sans-serif;
-  font-size: 13px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
   transition: background 0.15s ease;
 }
 header.site .xchip:hover { text-decoration: none; border-color: var(--cobalt); color: var(--cobalt); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
@@ -69,9 +69,10 @@ header.site .xchip:hover .xbox { background: var(--cobalt); }
     align-items: center; column-gap: 10px; row-gap: 10px; padding: 10px 14px;
   }
   header.site .bar > a:first-child { grid-column: 1; grid-row: 1; min-width: 0; }
-  header.site img.mark { width: 34px; height: 34px; flex: none; }
+  header.site img.mark { width: 36px; height: 36px; flex: none; }
   header.site .word { font-size: 16px; letter-spacing: 0; white-space: nowrap; }
-  header.site .xchip { grid-column: 2; grid-row: 1; margin-left: 0; font-size: 12px; }
+  header.site .xchip { grid-column: 2; grid-row: 1; margin-left: 0; font-size: 12px; height: 36px; padding: 0 11px 0 5px; }
+  header.site .xchip .xbox { width: 24px; height: 24px; font-size: 12px; }
   header.site nav {
     grid-column: 1 / -1; grid-row: 2; width: 100%; margin-left: 0; flex-wrap: nowrap;
     overflow-x: auto; gap: 18px; padding-bottom: 4px; scrollbar-width: none;
@@ -84,7 +85,7 @@ header.site .xchip:hover .xbox { background: var(--cobalt); }
   header.site .xchip { font-size: 11px; }
 }
 @media (max-width: 380px) {
-  header.site .xchip { padding: 5px; }
+  header.site .xchip { padding: 0 5px; }
   header.site .xchip .xhandle { display: none; }
 }
 
