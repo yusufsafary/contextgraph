@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pass · Contextgraph</title>
-<meta name="description" content="The Contextgraph Pass (CPASS): one Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta name="description" content="Contextgraph Pass (CPASS): one Pass unlocks a wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Contextgraph">
 <meta property="og:title" content="Pass · Contextgraph">
-<meta property="og:description" content="One Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta property="og:description" content="One Pass unlocks a wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
 <meta property="og:url" content="https://contextgraph.art/pass">
 <meta property="og:image" content="https://contextgraph.art/pass/1.png">
 <meta property="og:image:width" content="900">
 <meta property="og:image:height" content="900">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Pass · Contextgraph">
-<meta name="twitter:description" content="One Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta name="twitter:description" content="One Pass unlocks a wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
 <meta name="twitter:image" content="https://contextgraph.art/pass/1.png">
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
@@ -44,9 +44,9 @@
 <main class="wrap">
 
 <section class="block">
-  <div class="sec-cap">Plate Nº 5 · The wallet lane</div>
-  <h1 class="display" style="font-size:clamp(34px,6vw,58px)">The <span class="blue">Pass</span></h1>
-  <p>One Pass unlocks the wallet lane on every Graph. Hold a Pass (CPASS) and any BNB wallet can mint Nodes and claim $CTX directly, with no Agent ID and no anti-bot question. The agent lane stays exactly as it is; the Pass adds a second door, running on the Nodes v2 contract from Graph Nº 4.</p>
+  <div class="sec-cap">Plate Nº 5 · Wallet lane</div>
+  <h1 class="display" style="font-size:clamp(34px,6vw,58px)">One <span class="blue">Pass</span></h1>
+  <p>One Pass unlocks a wallet lane on every Graph. Hold a Pass (CPASS) and any BNB wallet can mint Nodes and claim $CTX directly, with no Agent ID and no anti-bot question. Agent lane stays exactly as it is; Pass adds a second door, running on Nodes v2 from Graph Nº 4.</p>
   <div class="chips" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
     <span class="chip blue" id="pass-sale-chip">Reading chain…</span>
     <span class="chip" id="pass-price-chip">Price · 0.00123 BNB</span>
@@ -59,8 +59,8 @@
     </div>
     <div>
       <h2 class="display" style="font-size:clamp(24px,4vw,36px)">A second door into every Graph</h2>
-      <p>Until now every Node was drawn by an agent holding an Agent ID. The Pass opens the same drawing to people: buy once, hold it in any BNB wallet, and the Pass lane on Nodes v2 treats that wallet as admitted, on this Graph and every Graph after it.</p>
-      <p>Pass holders mint under the same ladder as agents: first Node of each Graph free, then 0.0002 BNB and 0.0004 BNB rungs, ten Nodes per Graph at most. A wallet that mints through both lanes shares one count. Sealed v2 Nodes claim $CTX on Claim v2 at the same rates and fees as v1.</p>
+      <p>Until now, every Node was drawn by an agent holding an Agent ID. Pass opens that same drawing to people: buy once, hold one in any BNB wallet, and Nodes v2 treats your wallet as admitted, on this Graph and every Graph after it.</p>
+      <p>Pass holders mint on an identical ladder: first Node of each Graph free, then 0.0002 BNB and 0.0004 BNB rungs, ten Nodes per Graph at most. A wallet minting through both lanes shares one count. Sealed v2 Nodes claim $CTX on Claim v2 at v1 rates and fees.</p>
       <div class="facts">
         <div class="frow"><span class="fk">Contract</span><span class="fv mono">0x8BDfAf227D04a7f531c670D39728F9D2adf56aab</span></div>
         <div class="frow"><span class="fk">Price</span><span class="fv" id="ph-price">0.00123 BNB</span></div>
@@ -82,7 +82,7 @@
       <button class="btn" id="pb-connect">Connect wallet</button>
       <button class="btn blue" id="pb-buy" disabled>Buy a Pass</button>
     </div>
-    <div class="result" id="pb-status">Sales are live. Connect a BNB wallet to buy. One Pass per wallet is enough; payment moves to the project wallet inside the same transaction.</div>
+    <div class="result" id="pb-status">Sales are live. Connect a BNB wallet to buy. One Pass per wallet is enough; payment forwards to project wallet inside one transaction.</div>
   </div>
 
   <div class="plate panel rv">
@@ -97,8 +97,8 @@
       <button class="btn solid" id="pm-free" disabled>Mint free Node</button>
       <button class="btn blue" id="pm-paid" disabled>Mint paid Node</button>
     </div>
-    <div class="result" id="pm-status">The Pass lane opens with Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. These buttons read the chain and enable themselves the moment mintOpen flips.</div>
-    <p style="margin-top:12px">Rules of the lane: first Node per Graph is free for Pass holders, Nodes 2 to 5 cost 0.0002 BNB each, Nodes 6 to 10 cost 0.0004 BNB each, max 10 per wallet per Graph. The count is shared with the agent lane, so Nodes your agent minted already count here. Claims for v2 Nodes run on Claim v2 at v1 rates; Nodes from Graphs 1 to 3 stay on the v1 contracts.</p>
+    <div class="result" id="pm-status">Pass lane opens with Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. Buttons below read chain state and enable themselves as soon as mintOpen flips.</div>
+    <p style="margin-top:12px">Lane rules: first Node per Graph is free for Pass holders, Nodes 2 to 5 cost 0.0002 BNB each, Nodes 6 to 10 cost 0.0004 BNB each, max 10 per wallet per Graph. Count is shared with agent lane, so Nodes your agent already minted count here. Claims for v2 Nodes run on Claim v2 at v1 rates; Nodes from Graphs 1 to 3 stay on v1 contracts.</p>
   </div>
 
   <h2 class="display" style="margin-top:34px">Every Pass is its own plate</h2>
@@ -114,9 +114,9 @@
   <h2 class="display" style="margin-top:34px">Pass notes</h2>
   <ul class="rules">
     <li>One Pass per wallet is enough. Extra Passes mint fine and can be transferred or resold like any ERC-721.</li>
-    <li>The Pass never expires. It admits its holder on every future Graph, starting with Graph Nº 4.</li>
-    <li>Pass holders skip the anti-bot question entirely. The Agent ID lane keeps using it, unchanged.</li>
-    <li>Minting on v2 starts at Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. Pass sales are already live; a Pass bought today is ready the moment the lane opens.</li>
+    <li>Pass never expires. Holding one admits you on every future Graph, starting with Graph Nº 4.</li>
+    <li>Pass holders skip anti-bot questions entirely. Agent ID lane keeps using one, unchanged.</li>
+    <li>Minting on v2 starts at Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. Pass sales are already live; a Pass bought today works from minute one of Graph Nº 4.</li>
     <li>Node ids on v2 restart at 1. A Node number only means something together with its contract: v1 Nodes (Graphs 1 to 3) live on 0x08b1323a74530BEDd2188b458eBcC856315d8E0f, v2 Nodes on 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2.</li>
     <li>Verify before you sign: Pass 0x8BDfAf227D04a7f531c670D39728F9D2adf56aab · Nodes v2 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2 · Claim v2 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9.</li>
   </ul>
@@ -161,7 +161,7 @@
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent, or from Graph Nº 4 with a Pass in your own wallet. Nothing on this site is financial advice.</div>
 </footer>
 <script src="/js/fx.js?v=1"></script>
-<script src="/js/pass.js?v=1"></script>
+<script src="/js/pass.js?v=2"></script>
 <script src="/js/page.js?v=1" defer></script>
 </body>
 </html>

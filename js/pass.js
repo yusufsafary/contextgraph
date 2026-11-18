@@ -173,7 +173,7 @@
       setStatus(statusEl, verb + " sent · tx " + txLink(hash) + " · waiting for confirmation…");
       var rc = await waitReceipt(hash);
       if (!rc) {
-        setStatus(statusEl, "Tx " + txLink(hash) + " is still pending. Check BscScan for the final state.");
+        setStatus(statusEl, "Tx " + txLink(hash) + " is still pending. Check BscScan for final state.");
       } else if (rc.status === "0x1") {
         setStatus(statusEl, '<span class="cob">Confirmed</span> · tx ' + txLink(hash));
         await readPublic(); await readWallet();
@@ -189,7 +189,7 @@
   async function buy() {
     var st = $("pb-status");
     if (!S.account) { connect(); return; }
-    if (!FX) { setStatus(st, "Chain helper unavailable; reload the page."); return; }
+    if (!FX) { setStatus(st, "Chain helper unavailable; please reload."); return; }
     try {
       // Re-read the price at send time so the value is exact.
       S.priceWei = BigInt(await FX.call(PASS, SEL.price));
@@ -203,12 +203,12 @@
   }
   async function mintPaid() {
     var st = $("pm-status");
-    if (!FX) { setStatus(st, "Chain helper unavailable; reload the page."); return; }
+    if (!FX) { setStatus(st, "Chain helper unavailable; please reload."); return; }
     try {
       S.nextWei = BigInt(await FX.call(NODES2, SEL.priceFor + padAddr(S.account)));
     } catch (e) { /* use last known price */ }
     if (S.nextWei === null || S.nextWei === 0n) {
-      setStatus(st, "Your next Node is free; use the free mint button.");
+      setStatus(st, "Your next Node is free.");
       render(); return;
     }
     await send(NODES2, SEL.mintPaidPass, S.nextWei, st, "Paid Node mint");
