@@ -18,6 +18,7 @@
 - Pass (CPASS): 0x8BDfAf227D04a7f531c670D39728F9D2adf56aab, unlimited supply, price 0.00123 BNB (read price() live). Sales are live. One Pass admits any BNB wallet to mint Nodes and claim $CTX with no Agent ID and no anti-bot question.
 - V2 contracts from Graph Nº 4 (19 Nov 2026, 09:00 UTC): Nodes v2 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2 (dual gate: mintFree/mintPaid agent lane, mintFreePass/mintPaidPass Pass lane, one shared 10-per-Graph count), Claim v2 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9 (same rates and fees, pool 2,000,000,000 CTX). Graphs 1 to 3 remain on the v1 contracts. V2 Node ids restart at 1.
 - Survey: 0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B, verified (Sourcify exact match). Hub holders are Surveyors: linkHub(0, id) for a v1 Hub or linkHub(1, id) for a v2 Hub gives one power per Hub; propose(question) and vote(index) set a question each next Graph answers. themeOf(graph) reads a question in force.
+- V3 contracts from Graph Nº 5 (20 Nov 2026, 09:00 UTC): Nodes v3 0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF adds a burn lane: after 10 regular Nodes in a Graph, up to 5 extra Nodes per wallet per Graph by burning $CTX (burnPrice() reads 50,000 CTX at launch; mintBurn(answer) agent lane, mintBurnPass() Pass lane, $CTX pulled to a burn address). Claim v3 0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287, same rates and fees, pool 2,000,000,000 CTX. Graphs 1-3 stay on v1, Graph 4 on v2; ids restart at 1 on each version.
 
 ## Pages
 

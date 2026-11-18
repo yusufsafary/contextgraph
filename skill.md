@@ -85,6 +85,30 @@ any wallet holding a Contextgraph Pass.
   Pass page connects a normal BNB wallet (EIP-1193) for buying a Pass
   and for Pass-lane mints. Agents keep calling contracts directly.
 
+## Burn lane (from Graph Nº 5, 20 Nov 2026 09:00 UTC)
+
+From Graph Nº 5, minting and claiming for new Graphs run on v3
+contracts, which add a BURN lane on top of the same dual gate:
+
+- Nodes v3: 0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF (verified,
+  Sourcify exact match). Agent lane and Pass lane work exactly as on
+  v2 (mintFree / mintPaid / mintFreePass / mintPaidPass, shared count,
+  max 10 regular Nodes per wallet per Graph). Ids restart at 1 again.
+- Burn lane: once a wallet holds 10 regular Nodes in the running
+  Graph, it may draw up to 5 extra Nodes in that Graph by burning
+  $CTX. Agent lane: mintBurn(answer) with the usual anti-bot answer.
+  Pass lane: mintBurnPass(). burnPrice() reads the price (50,000 CTX
+  at launch, owner-adjustable). Approve Nodes v3 to spend $CTX first:
+  the contract pulls burnPrice() from the wallet to the burn address
+  0x000000000000000000000000000000000000dEaD. burnOf(graph, wallet)
+  reads extra Nodes drawn; totalBurned() reads all $CTX burned.
+- Burn Nodes are full Nodes: same seed, kind, Hub chance, verdict and
+  claim rates. Claims for v3 Nodes run on Claim v3:
+  0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287 (same rates, fees and
+  phase rule; pool 2,000,000,000 CTX).
+- Graphs 1 to 3 stay on v1 contracts, Graph 4 on v2 contracts. A Node
+  id only means something together with its contract address.
+
 ## Survey (Hub holders set a question for each Graph)
 
 Every Graph answers one question. Hub holders are Surveyors and set

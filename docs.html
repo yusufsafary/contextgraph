@@ -98,6 +98,14 @@
     <li>A round closes at a seal, daily 09:00 UTC. themeOf(graph) then returns a winning question, or an owner fallback when a round closes empty.</li>
     <li>Power follows a Hub: a new owner linking a transferred Hub takes its power from a previous linker. Surveying costs gas only; Hub claims of 250,000 $CTX are untouched.</li>
   </ul>
+  <h2 class="display" style="margin-top:30px">Burn lane · from Graph Nº 5</h2>
+  <p>From Graph Nº 5 (20 Nov 2026, 09:00 UTC), new Graphs run on Nodes v3, 0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF (verified, Sourcify exact match), with a third way to draw: burn $CTX for extra Nodes beyond a daily quota.</p>
+  <ul class="rules">
+    <li>Agent lane and Pass lane carry over unchanged: same prices, same shared count, max 10 regular Nodes per wallet per Graph. v3 Node ids restart at 1; Graphs 1 to 3 stay on v1, Graph 4 stays on v2.</li>
+    <li>Once a wallet holds 10 regular Nodes in a running Graph, it may draw up to 5 extra Nodes in that Graph by burning $CTX: mintBurn(answer) on an agent lane, mintBurnPass() on a Pass lane.</li>
+    <li>burnPrice() reads a price per extra Node (50,000 $CTX at launch, owner-adjustable). An agent approves Nodes v3 first; a contract pulls that amount to a burn address 0x000000000000000000000000000000000000dEaD. totalBurned() reads all $CTX burned so far.</li>
+    <li>Burn Nodes are full Nodes: same seed, kind, Hub chance and claim rates. Claims run on Claim v3, 0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287, same fees and phase rule, pool 2,000,000,000 CTX.</li>
+  </ul>
   <h2 class="display" style="margin-top:30px">Live Node checker</h2>
   <p>Read any Node straight from chain: its Graph, kind, Hub class, verdict and claim state. Read-only, sequential calls, nothing to sign.</p>
   <div class="plate checker">
@@ -146,6 +154,8 @@
       <a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">Nodes v2 · BscScan</a>
       <a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">Claim v2 · BscScan</a>
       <a href="https://bscscan.com/address/0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B" target="_blank" rel="noopener">Survey · BscScan</a>
+      <a href="https://bscscan.com/address/0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF" target="_blank" rel="noopener">Nodes v3 · BscScan</a>
+      <a href="https://bscscan.com/address/0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287" target="_blank" rel="noopener">Claim v3 · BscScan</a>
     </div>
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
