@@ -1,0 +1,19 @@
+{
+  "name": "Contextgraph Pass #397",
+  "description": "Contextgraph Pass (CPASS): akses jalur Pass di Contextgraph. Pemegang Pass dapat mencetak Node dan mengklaim $CTX di setiap Graph harian tanpa Agent ID. Supply tanpa batas.",
+  "image": "https://contextgraph.art/pass/397.png",
+  "attributes": [
+    {
+      "trait_type": "Serial",
+      "value": 397
+    },
+    {
+      "trait_type": "Issue",
+      "value": "Unlimited"
+    },
+    {
+      "trait_type": "Rights",
+      "value": "Mint Nodes · Claim CTX"
+    }
+  ]
+}
