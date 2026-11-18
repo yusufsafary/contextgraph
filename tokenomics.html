@@ -20,6 +20,7 @@
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=6">
+<link rel="stylesheet" href="/css/upgrade.css?v=1">
 
 </head>
 <body>
@@ -49,6 +50,29 @@
     <tr><td>Claim pool (Contextgraph Claim contract)</td><td>2,000,000,000 CTX</td><td>20%</td></tr>
     <tr><td>Project wallet</td><td>8,000,000,000 CTX</td><td>80%</td></tr>
   </table>
+  <div class="donut-wrap rv">
+    <div class="donut-box">
+      <svg viewBox="0 0 200 200" role="img" aria-label="$CTX allocation donut">
+        <circle class="donut-seg" data-seg="wallet" cx="100" cy="100" r="78" stroke="#14161a"
+          stroke-dasharray="392.07 490.09" transform="rotate(-90 100 100)"></circle>
+        <circle class="donut-seg" data-seg="pool" cx="100" cy="100" r="78" stroke="#2438ff"
+          stroke-dasharray="98.02 490.09" stroke-dashoffset="-392.07" transform="rotate(-90 100 100)"></circle>
+      </svg>
+      <div class="donut-center"><div class="dc-big" id="dc-big">10,000,000,000 CTX</div><div class="dc-lab" id="dc-lab">Total supply</div></div>
+    </div>
+    <div>
+      <div class="donut-legend">
+        <div data-seg-link="pool"><span class="sw" style="background:#2438ff"></span>Claim pool · 2,000,000,000 CTX · 20%</div>
+        <div data-seg-link="wallet"><span class="sw" style="background:#14161a"></span>Project wallet · 8,000,000,000 CTX · 80%</div>
+      </div>
+      <p style="margin-top:12px">Hover or tap a segment. The pool share is held by the Claim contract and pays sealed Nodes; the wallet share covers operations and the future pool.</p>
+    </div>
+  </div>
+  <div class="pool-live rv">
+    <div><div class="pl-lab">Claim pool · live on chain</div><div class="pl-val" id="pl-pool">···</div></div>
+    <div><div class="pl-lab">Paid to claimants so far</div><div class="pl-val" id="pl-paid">···</div></div>
+    <div><div class="pl-lab">Pool health</div><div class="pl-val" id="pl-pct">···</div></div>
+  </div>
   <h2 class="display" style="margin-top:30px">Claim rates</h2>
   <table class="spec">
     <tr><th>Sealed verdict</th><th>Per Node</th></tr>
@@ -95,6 +119,8 @@
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
 </footer>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/tokenomics2.js?v=1"></script>
 <script src="/js/page.js?v=1" defer></script>
 </body>
 </html>

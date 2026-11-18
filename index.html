@@ -21,6 +21,7 @@
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=6">
 <link rel="stylesheet" href="/css/home.css?v=6">
+<link rel="stylesheet" href="/css/upgrade.css?v=1">
 </head>
 <body>
 <div class="announce"><span class="sq"></span>$CTX pool lists 1 December 2026 on Uniswap<span class="sq"></span></div>
@@ -68,11 +69,31 @@
     <div class="track"><div class="fill" id="gauge-fill"></div></div>
     <div class="marks"><span>0 · Isolated under 25</span><span>25 · Linked</span><span>100+ · Networked</span></div>
   </div>
+  <div class="plate phyto rv">
+    <div class="cap">Fig. 2 · Phyllotaxis field · golden-angle growth to the live Node count</div>
+    <canvas id="phyto-canvas" width="1120" height="520"></canvas>
+    <div class="figcap"><span id="phyto-nodes">NODES DRAWN · 0</span><span id="phyto-hover"></span><span>CONTEXTGRAPH · FIG. 2</span></div>
+    <p class="up-note">Every point is one Node of the running Graph, placed by the golden angle (137.508°). Cobalt squares mark Hub-class positions, about 3 in 100 in this drawing model. Hover to survey.</p>
+  </div>
 </section>
 
 
 <div class="marquee rv" aria-hidden="true"><div class="track"><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div></div></div>
 
+<section class="block" id="ledger" style="padding-top:34px">
+  <div class="sec-cap">§ 00 · Ledger</div>
+  <h2 class="display">The count so far</h2>
+  <div class="ledger">
+    <div class="cell"><div class="lab" id="l-graph-lab">Total Nodes</div><div class="val" id="l-total">···</div></div>
+    <div class="cell"><div class="lab">Sealed Nodes</div><div class="val" id="l-sealed">···</div></div>
+    <div class="cell"><div class="lab">Nodes claimed</div><div class="val" id="l-claimed">···</div></div>
+    <div class="cell hot"><div class="lab">Sealed · unclaimed</div><div class="val" id="l-unclaimed">···</div></div>
+  </div>
+  <div class="plate feed">
+    <div class="feed-head"><span class="live-dot"></span><span class="up-cap">Live Node feed · polls chain every 20 seconds</span></div>
+    <ul id="feed-list"><li><span>Reading chain…</span><span class="fg">live</span></li></ul>
+  </div>
+</section>
 <section class="block" id="mint">
   <div class="sec-cap">§ 01 · Mint</div>
   <h2 class="display">Mint a Node</h2>
@@ -142,8 +163,20 @@
     </div>
   </div>
 </section>
+
+<section class="block" id="explore">
+  <div class="sec-cap">§ 04 · Explorer</div>
+  <h2 class="display">Survey a Graph</h2>
+  <p>A statistical model of a Graph field: 220 points on the golden angle. Surveying a point shows how Nodes link and what every Node is up against. A real Node has its kind and class fixed by its seed on chain; this model shows odds only.</p>
+  <div class="explorer">
+    <div class="xframe"><canvas id="x-canvas" width="520" height="520"></canvas></div>
+    <div class="xread" id="x-readout">Reading the field…</div>
+  </div>
+</section>
 <script src="/js/config.js?v=1"></script>
 <script src="/js/board.js?v=4"></script>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/home2.js?v=1"></script>
 
 </main>
 <footer class="site">

@@ -20,6 +20,7 @@
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=6">
+<link rel="stylesheet" href="/css/upgrade.css?v=1">
 
 </head>
 <body>
@@ -72,6 +73,16 @@
     <tr><td class="mono">claim(id)</td><td>Claim with exact fee as value</td></tr>
   </table>
   <p>Graphs seal daily at 09:00 UTC. Genesis start: 2026-11-16 09:00 UTC.</p>
+  <h2 class="display" style="margin-top:30px">Live Node checker</h2>
+  <p>Read any Node straight from chain: its Graph, kind, Hub class, verdict and claim state. Read-only, sequential calls, nothing to sign.</p>
+  <div class="plate checker">
+    <div class="up-cap">Node checker · read-only</div>
+    <div class="row">
+      <input id="chk-id" type="number" min="1" placeholder="Node number">
+      <button class="btn blue" id="chk-btn">Check Node</button>
+    </div>
+    <div class="result" id="chk-out">Enter a Node number to read it from chain.</div>
+  </div>
 </section>
 
 </main>
@@ -108,6 +119,8 @@
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
 </footer>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/docs2.js?v=1"></script>
 <script src="/js/page.js?v=1" defer></script>
 </body>
 </html>
