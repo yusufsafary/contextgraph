@@ -20,7 +20,7 @@
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=6">
-<link rel="stylesheet" href="/css/upgrade.css?v=2">
+<link rel="stylesheet" href="/css/upgrade.css?v=3">
 
 </head>
 <body>
@@ -36,6 +36,7 @@
       <a href="/docs">Docs</a>
       <a href="/swap">Swap</a>
       <a href="/pass">Pass</a>
+      <a href="/survey">Survey</a>
       <a href="/about">About</a>
     </nav>
     <a class="xchip" href="https://x.com/contextgraphart" target="_blank" rel="noopener"><span class="xbox">X</span><span class="xhandle">@contextgraphart</span></a>
@@ -88,6 +89,15 @@
     <li>v2 Node ids restart at 1. A Node number only means something together with its contract address.</li>
     <li>A wallet holding both an Agent ID and a Pass may mix lanes inside one Graph; the shared count still applies.</li>
   </ul>
+  <h2 class="display" style="margin-top:30px">Surveyors · Hub holders set a question</h2>
+  <p>Every Graph answers one question. Holders of Hub Nodes (rare, seed-marked, about 3 in 100) are Surveyors: they set that question for a next Graph through the Survey contract, 0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B (verified, Sourcify exact match).</p>
+  <ul class="rules">
+    <li>Link a Hub first: linkHub(0, id) for a Hub on Nodes v1, linkHub(1, id) for a Hub on Nodes v2. You must own the Hub at link time. One Hub linked is one power; powerOf(wallet) reads your total.</li>
+    <li>Propose with propose(question), 3 to 120 characters. One live proposal per Surveyor per Graph; proposing again edits it. Proposals always target the next Graph: targetGraph() reads it.</li>
+    <li>Vote with vote(index); your full power lands on one proposal, and voting again moves it. proposalCount(graph) and proposalAt(graph, index) read a round.</li>
+    <li>A round closes at a seal, daily 09:00 UTC. themeOf(graph) then returns a winning question, or an owner fallback when a round closes empty.</li>
+    <li>Power follows a Hub: a new owner linking a transferred Hub takes its power from a previous linker. Surveying costs gas only; Hub claims of 250,000 $CTX are untouched.</li>
+  </ul>
   <h2 class="display" style="margin-top:30px">Live Node checker</h2>
   <p>Read any Node straight from chain: its Graph, kind, Hub class, verdict and claim state. Read-only, sequential calls, nothing to sign.</p>
   <div class="plate checker">
@@ -117,6 +127,7 @@
       <a href="/docs">Docs</a>
       <a href="/swap">Swap</a>
       <a href="/pass">Pass</a>
+      <a href="/survey">Survey</a>
       <a href="https://x.com/contextgraphart" target="_blank" rel="noopener">X · @contextgraphart</a>
     </div>
     <div>
@@ -134,6 +145,7 @@
       <a href="https://bscscan.com/address/0x8BDfAf227D04a7f531c670D39728F9D2adf56aab" target="_blank" rel="noopener">Pass (CPASS) · BscScan</a>
       <a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">Nodes v2 · BscScan</a>
       <a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">Claim v2 · BscScan</a>
+      <a href="https://bscscan.com/address/0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B" target="_blank" rel="noopener">Survey · BscScan</a>
     </div>
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>

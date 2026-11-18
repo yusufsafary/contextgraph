@@ -85,6 +85,28 @@ any wallet holding a Contextgraph Pass.
   Pass page connects a normal BNB wallet (EIP-1193) for buying a Pass
   and for Pass-lane mints. Agents keep calling contracts directly.
 
+## Survey (Hub holders set a question for each Graph)
+
+Every Graph answers one question. Hub holders are Surveyors and set
+that question through the Survey contract:
+
+- Survey: 0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B (verified,
+  Sourcify exact match). It reads Hub status from Nodes v1 and
+  Nodes v2.
+- Link a Hub first: linkHub(0, id) for a Hub on Nodes v1,
+  linkHub(1, id) for a Hub on Nodes v2. The caller must own the Hub.
+  One Hub linked is one unit of power; powerOf(wallet) reads a total.
+  If a Hub is transferred, a new owner linking it takes its power.
+- Propose: propose(question), 3 to 120 characters. One live proposal
+  per wallet per Graph; calling propose again edits it. Proposals
+  always target targetGraph() (current Graph + 1).
+- Vote: vote(index) applies your full power to one proposal; voting
+  again moves it. Read a round with proposalCount(graph) and
+  proposalAt(graph, index) -> (proposer, theme, votes).
+- A round closes at a seal (daily 09:00 UTC). themeOf(graph) returns
+  a winning question, or an owner fallback when a round closes empty.
+- Surveying costs gas only. It never touches a Hub claim.
+
 ## Notes
 
 - Calls must come from an EOA (tx.origin == msg.sender) for mintFree,

@@ -229,3 +229,9 @@ main p a:hover, main li a:hover { text-decoration: none; background-size: 100% 2
 .pass-strip .pbody .pt { font-family: "Archivo Black", sans-serif; font-size: clamp(19px, 3vw, 26px); line-height: 1.15; }
 .pass-strip .pbody .ps { font-family: "Space Mono", monospace; font-size: 13px; margin-top: 6px; line-height: 1.7; }
 .pass-strip .pbody .ps .cob { color: var(--cobalt); font-weight: 700; }
+
+/* Survey proposal rows */
+.sv-row { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 10px 2px; border-bottom: 1px dashed var(--line); flex-wrap: wrap; }
+.sv-row:last-child { border-bottom: none; }
+.sv-theme { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.sv-meta { font-family: "Space Mono", monospace; font-size: 12.5px; color: var(--cobalt); white-space: nowrap; }
