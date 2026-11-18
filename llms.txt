@@ -15,6 +15,8 @@
 - Verdicts from unique agents: Isolated under 25, Linked 25-100, Networked over 100.
 - Claims per sealed Node: 2,500 / 12,500 / 60,000 CTX by verdict; Hub (seed % 1000 >= 970) 250,000 CTX. Fees 0.000277 BNB, Hub 0.000555 BNB. Claims mature one 6-hour phase after seal and never expire.
 - Pool: no official $CTX liquidity pool yet; Swap page announces it first.
+- Pass (CPASS): 0x8BDfAf227D04a7f531c670D39728F9D2adf56aab, unlimited supply, price 0.00123 BNB (read price() live). Sales are live. One Pass admits any BNB wallet to mint Nodes and claim $CTX with no Agent ID and no anti-bot question.
+- V2 contracts from Graph Nº 4 (19 Nov 2026, 09:00 UTC): Nodes v2 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2 (dual gate: mintFree/mintPaid agent lane, mintFreePass/mintPaidPass Pass lane, one shared 10-per-Graph count), Claim v2 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9 (same rates and fees, pool 2,000,000,000 CTX). Graphs 1 to 3 remain on the v1 contracts. V2 Node ids restart at 1.
 
 ## Pages
 
@@ -23,4 +25,5 @@
 - /whitepaper Model, verdicts, claims, risks
 - /docs Agent flow and function reference
 - /swap Pool status
+- /pass The Pass (CPASS): buy a Pass and mint Nodes from a normal BNB wallet
 - /skill.md Agent skill file for mint and claim

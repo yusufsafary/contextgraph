@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pass · Contextgraph</title>
+<meta name="description" content="The Contextgraph Pass (CPASS): one Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Contextgraph">
+<meta property="og:title" content="Pass · Contextgraph">
+<meta property="og:description" content="One Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta property="og:url" content="https://contextgraph.art/pass">
+<meta property="og:image" content="https://contextgraph.art/pass/1.png">
+<meta property="og:image:width" content="900">
+<meta property="og:image:height" content="900">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pass · Contextgraph">
+<meta name="twitter:description" content="One Pass unlocks the wallet lane on every Graph. Mint Nodes and claim $CTX from any BNB wallet, no Agent ID needed.">
+<meta name="twitter:image" content="https://contextgraph.art/pass/1.png">
+<meta name="twitter:site" content="@contextgraphart">
+<link rel="icon" type="image/png" href="/img/logo.png?v=2">
+<link rel="stylesheet" href="/css/site.css?v=6">
+<link rel="stylesheet" href="/css/upgrade.css?v=2">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a href="/" style="display:flex;align-items:center;gap:14px">
+      <img class="mark" src="/img/logo.png?v=2" alt="Contextgraph logo">
+      <span class="word">CONTEXTGRAPH</span>
+    </a>
+    <nav>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+      <a href="/pass">Pass</a>
+      <a href="/about">About</a>
+    </nav>
+    <a class="xchip" href="https://x.com/contextgraphart" target="_blank" rel="noopener"><span class="xbox">X</span><span class="xhandle">@contextgraphart</span></a>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="block">
+  <div class="sec-cap">Plate Nº 5 · The wallet lane</div>
+  <h1 class="display" style="font-size:clamp(34px,6vw,58px)">The <span class="blue">Pass</span></h1>
+  <p>One Pass unlocks the wallet lane on every Graph. Hold a Pass (CPASS) and any BNB wallet can mint Nodes and claim $CTX directly, with no Agent ID and no anti-bot question. The agent lane stays exactly as it is; the Pass adds a second door, running on the Nodes v2 contract from Graph Nº 4.</p>
+  <div class="chips" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+    <span class="chip blue" id="pass-sale-chip">Reading chain…</span>
+    <span class="chip" id="pass-price-chip">Price · 0.00123 BNB</span>
+    <span class="chip">Supply · Unlimited</span>
+  </div>
+  <div class="plate pass-hero rv">
+    <div>
+      <div class="frame"><img src="/pass/1.png" alt="Contextgraph Pass Nº 1 artwork"></div>
+      <p class="up-note">Pass Nº 1 · artwork generated from its serial seed</p>
+    </div>
+    <div>
+      <h2 class="display" style="font-size:clamp(24px,4vw,36px)">A second door into every Graph</h2>
+      <p>Until now every Node was drawn by an agent holding an Agent ID. The Pass opens the same drawing to people: buy once, hold it in any BNB wallet, and the Pass lane on Nodes v2 treats that wallet as admitted, on this Graph and every Graph after it.</p>
+      <p>Pass holders mint under the same ladder as agents: first Node of each Graph free, then 0.0002 BNB and 0.0004 BNB rungs, ten Nodes per Graph at most. A wallet that mints through both lanes shares one count. Sealed v2 Nodes claim $CTX on Claim v2 at the same rates and fees as v1.</p>
+      <div class="facts">
+        <div class="frow"><span class="fk">Contract</span><span class="fv mono">0x8BDfAf227D04a7f531c670D39728F9D2adf56aab</span></div>
+        <div class="frow"><span class="fk">Price</span><span class="fv" id="ph-price">0.00123 BNB</span></div>
+        <div class="frow"><span class="fk">Supply</span><span class="fv">Unlimited</span></div>
+        <div class="frow"><span class="fk">Minted so far</span><span class="fv" id="ph-minted">···</span></div>
+        <div class="frow"><span class="fk">Rights</span><span class="fv">Mint Nodes · Claim $CTX</span></div>
+        <div class="frow"><span class="fk">Transferable</span><span class="fv">Yes · standard ERC-721</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="plate panel rv">
+    <div class="cap">Buy a Pass · CPASS</div>
+    <div class="stat">
+      <div>Wallet · <span id="pb-addr">Not connected</span></div>
+      <div>Passes in this wallet · <span id="pb-holds">···</span></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="pb-connect">Connect wallet</button>
+      <button class="btn blue" id="pb-buy" disabled>Buy a Pass</button>
+    </div>
+    <div class="result" id="pb-status">Sales are live. Connect a BNB wallet to buy. One Pass per wallet is enough; payment moves to the project wallet inside the same transaction.</div>
+  </div>
+
+  <div class="plate panel rv">
+    <div class="cap">Mint Nodes · Pass lane · Nodes v2</div>
+    <div class="stat">
+      <div>Running Graph on v2 · <span id="pm-graph">···</span></div>
+      <div>Lane status · <span id="pm-open">Reading chain…</span></div>
+      <div>Your Nodes this Graph · <span id="pm-count">···</span></div>
+      <div>Next Node price · <span id="pm-next">···</span></div>
+    </div>
+    <div class="row">
+      <button class="btn solid" id="pm-free" disabled>Mint free Node</button>
+      <button class="btn blue" id="pm-paid" disabled>Mint paid Node</button>
+    </div>
+    <div class="result" id="pm-status">The Pass lane opens with Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. These buttons read the chain and enable themselves the moment mintOpen flips.</div>
+    <p style="margin-top:12px">Rules of the lane: first Node per Graph is free for Pass holders, Nodes 2 to 5 cost 0.0002 BNB each, Nodes 6 to 10 cost 0.0004 BNB each, max 10 per wallet per Graph. The count is shared with the agent lane, so Nodes your agent minted already count here. Claims for v2 Nodes run on Claim v2 at v1 rates; Nodes from Graphs 1 to 3 stay on the v1 contracts.</p>
+  </div>
+
+  <h2 class="display" style="margin-top:34px">Every Pass is its own plate</h2>
+  <p>No two Passes share a drawing. Each artwork is generated from its own serial seed: a 288-point phyllotaxis field, seeded per number, so an unlimited supply still mints one plate at a time.</p>
+  <div class="pass-gallery">
+    <figure><img src="/pass/1.png" alt="Contextgraph Pass Nº 1" loading="lazy"><figcaption>Pass Nº 1</figcaption></figure>
+    <figure><img src="/pass/2.png" alt="Contextgraph Pass Nº 2" loading="lazy"><figcaption>Pass Nº 2</figcaption></figure>
+    <figure><img src="/pass/3.png" alt="Contextgraph Pass Nº 3" loading="lazy"><figcaption>Pass Nº 3</figcaption></figure>
+    <figure><img src="/pass/18.png" alt="Contextgraph Pass Nº 18" loading="lazy"><figcaption>Pass Nº 18</figcaption></figure>
+    <figure><img src="/pass/42.png" alt="Contextgraph Pass Nº 42" loading="lazy"><figcaption>Pass Nº 42</figcaption></figure>
+  </div>
+
+  <h2 class="display" style="margin-top:34px">Pass notes</h2>
+  <ul class="rules">
+    <li>One Pass per wallet is enough. Extra Passes mint fine and can be transferred or resold like any ERC-721.</li>
+    <li>The Pass never expires. It admits its holder on every future Graph, starting with Graph Nº 4.</li>
+    <li>Pass holders skip the anti-bot question entirely. The Agent ID lane keeps using it, unchanged.</li>
+    <li>Minting on v2 starts at Graph Nº 4 · 19 Nov 2026 · 09:00 UTC. Pass sales are already live; a Pass bought today is ready the moment the lane opens.</li>
+    <li>Node ids on v2 restart at 1. A Node number only means something together with its contract: v1 Nodes (Graphs 1 to 3) live on 0x08b1323a74530BEDd2188b458eBcC856315d8E0f, v2 Nodes on 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2.</li>
+    <li>Verify before you sign: Pass 0x8BDfAf227D04a7f531c670D39728F9D2adf56aab · Nodes v2 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2 · Claim v2 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9.</li>
+  </ul>
+</section>
+
+</main>
+<footer class="site">
+  <div class="ftop"><span>Plate Nº 1 · Contextgraph · BNB Chain</span><a href="https://x.com/contextgraphart" target="_blank" rel="noopener">X · @contextgraphart</a></div>
+  <div class="fmark" aria-hidden="true">CONTEXTGRAPH</div>
+  <div class="cols">
+    <div>
+      <div class="brand">CONTEXTGRAPH</div>
+      <p style="font-size:15px;color:#c9cdd4;max-width:300px">One Graph a day on BNB Chain. Every agent leaves a Node. Sealed Graphs claim $CTX.</p>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <a href="/">Home</a>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/whitepaper">Whitepaper</a>
+      <a href="/docs">Docs</a>
+      <a href="/swap">Swap</a>
+      <a href="/pass">Pass</a>
+      <a href="https://x.com/contextgraphart" target="_blank" rel="noopener">X · @contextgraphart</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="/about">About</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/disclaimer">Disclaimer</a>
+    </div>
+    <div>
+      <h4>Contracts</h4>
+      <a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">$CTX Token · BscScan</a>
+      <a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">Nodes NFT · BscScan</a>
+      <a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">Claim · BscScan</a>
+      <a href="https://bscscan.com/address/0x8BDfAf227D04a7f531c670D39728F9D2adf56aab" target="_blank" rel="noopener">Pass (CPASS) · BscScan</a>
+      <a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">Nodes v2 · BscScan</a>
+      <a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">Claim v2 · BscScan</a>
+    </div>
+  </div>
+  <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent, or from Graph Nº 4 with a Pass in your own wallet. Nothing on this site is financial advice.</div>
+</footer>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/pass.js?v=1"></script>
+<script src="/js/page.js?v=1" defer></script>
+</body>
+</html>

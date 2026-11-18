@@ -20,7 +20,7 @@
 <meta name="twitter:site" content="@contextgraphart">
 <link rel="icon" type="image/png" href="/img/logo.png?v=2">
 <link rel="stylesheet" href="/css/site.css?v=6">
-<link rel="stylesheet" href="/css/upgrade.css?v=1">
+<link rel="stylesheet" href="/css/upgrade.css?v=2">
 
 </head>
 <body>
@@ -35,6 +35,7 @@
       <a href="/whitepaper">Whitepaper</a>
       <a href="/docs">Docs</a>
       <a href="/swap">Swap</a>
+      <a href="/pass">Pass</a>
       <a href="/about">About</a>
     </nav>
     <a class="xchip" href="https://x.com/contextgraphart" target="_blank" rel="noopener"><span class="xbox">X</span><span class="xhandle">@contextgraphart</span></a>
@@ -58,6 +59,9 @@
     <tr><td>$CTX Token</td><td class="mono"><a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88</a></td></tr>
     <tr><td>Nodes (NODE)</td><td class="mono"><a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">0x08b1323a74530BEDd2188b458eBcC856315d8E0f</a></td></tr>
     <tr><td>Claim</td><td class="mono"><a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524</a></td></tr>
+    <tr><td>Pass (CPASS)</td><td class="mono"><a href="https://bscscan.com/address/0x8BDfAf227D04a7f531c670D39728F9D2adf56aab" target="_blank" rel="noopener">0x8BDfAf227D04a7f531c670D39728F9D2adf56aab</a></td></tr>
+    <tr><td>Nodes v2 (NODE)</td><td class="mono"><a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2</a></td></tr>
+    <tr><td>Claim v2</td><td class="mono"><a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9</a></td></tr>
     <tr><td>Agent ID gate (SPACE ID)</td><td class="mono">0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</td></tr>
   </table>
   <h2 class="display" style="margin-top:26px">Key functions</h2>
@@ -68,11 +72,22 @@
     <tr><td class="mono">verdictOf(g)</td><td>0 Pending, 1 Isolated, 2 Linked, 3 Networked</td></tr>
     <tr><td class="mono">questionFor(wallet) / answerFor(wallet)</td><td>Anti-bot question and its expected answer</td></tr>
     <tr><td class="mono">mintFree(answer) / mintPaid()</td><td>Mint paths, agent lane only</td></tr>
+    <tr><td class="mono">holdsPass(wallet)</td><td>Pass lane admission on Nodes v2</td></tr>
+    <tr><td class="mono">mintFreePass() / mintPaidPass()</td><td>Mint paths, Pass lane on Nodes v2</td></tr>
     <tr><td class="mono">isHub(id) / kindOf(id)</td><td>Rare class and kind of a Node</td></tr>
     <tr><td class="mono">claimable(id) / claimAmount(id) / feeFor(id)</td><td>Claim readiness, value and fee</td></tr>
     <tr><td class="mono">claim(id)</td><td>Claim with exact fee as value</td></tr>
   </table>
   <p>Graphs seal daily at 09:00 UTC. Genesis start: 2026-11-16 09:00 UTC.</p>
+  <h2 class="display" style="margin-top:30px">Pass lane · from Graph Nº 4</h2>
+  <p>From Graph Nº 4 (19 Nov 2026, 09:00 UTC), minting and claiming run on the v2 contracts behind a dual gate. The agent lane above works exactly as before. A second lane admits any wallet holding a Contextgraph Pass (CPASS): no Agent ID, no anti-bot question.</p>
+  <ul class="rules">
+    <li>Pass sales are live now. price() on the Pass contract reads the live price (0.00123 BNB at launch); supply is unlimited. Buy on the <a href="/pass">Pass page</a> with any BNB wallet, or call mint() with value == price().</li>
+    <li>Pass lane mint on Nodes v2: holdsPass(wallet) must be true. Free Node via mintFreePass(); paid Nodes via mintPaidPass() with value == priceFor(wallet). The ladder and the 10-per-Graph cap are shared with the agent lane: one count per wallet across both lanes.</li>
+    <li>Claims for v2 Nodes run on Claim v2 with the same rates, fees and phase rule as v1. Nodes from Graphs 1 to 3 stay on the v1 Nodes and Claim contracts and keep claiming there.</li>
+    <li>v2 Node ids restart at 1. A Node number only means something together with its contract address.</li>
+    <li>A wallet holding both an Agent ID and a Pass may mix lanes inside one Graph; the shared count still applies.</li>
+  </ul>
   <h2 class="display" style="margin-top:30px">Live Node checker</h2>
   <p>Read any Node straight from chain: its Graph, kind, Hub class, verdict and claim state. Read-only, sequential calls, nothing to sign.</p>
   <div class="plate checker">
@@ -101,6 +116,7 @@
       <a href="/whitepaper">Whitepaper</a>
       <a href="/docs">Docs</a>
       <a href="/swap">Swap</a>
+      <a href="/pass">Pass</a>
       <a href="https://x.com/contextgraphart" target="_blank" rel="noopener">X · @contextgraphart</a>
     </div>
     <div>
@@ -115,6 +131,9 @@
       <a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">$CTX Token · BscScan</a>
       <a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">Nodes NFT · BscScan</a>
       <a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">Claim · BscScan</a>
+      <a href="https://bscscan.com/address/0x8BDfAf227D04a7f531c670D39728F9D2adf56aab" target="_blank" rel="noopener">Pass (CPASS) · BscScan</a>
+      <a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">Nodes v2 · BscScan</a>
+      <a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">Claim v2 · BscScan</a>
     </div>
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>

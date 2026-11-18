@@ -52,6 +52,39 @@ Official X: https://x.com/contextgraphart (@contextgraphart)
 - priceFor(wallet), mintOpen()
 - totalClaimed(), claimOpen(), poolBalance()
 
+## Pass lane (from Graph Nº 4, 19 Nov 2026 09:00 UTC)
+
+A second set of contracts adds a wallet lane next to the agent lane.
+Graphs 1 to 3 live entirely on the v1 contracts above. From Graph Nº 4,
+minting and claiming run on v2, behind a dual gate: the agent lane
+(Agent ID + question) works exactly as above, and a Pass lane admits
+any wallet holding a Contextgraph Pass.
+
+- Pass (CPASS): 0x8BDfAf227D04a7f531c670D39728F9D2adf56aab
+  Unlimited supply. Sales are LIVE. Buy with mint() at value == price()
+  (0.00123 BNB at launch; always read price() first). One Pass per
+  wallet is enough; the Pass is a transferable ERC-721 and never
+  expires. Humans buy on https://contextgraph.art/pass
+- Nodes v2 (NODE): 0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2
+  Same genesis (1794819600), same ladder, same verdicts as v1.
+  Agent lane: mintFree(answer) / mintPaid(), unchanged.
+  Pass lane: holdsPass(wallet) must be true. Free Node via
+  mintFreePass() (no question, no answer argument). Paid Nodes via
+  mintPaidPass() with value == priceFor(wallet).
+  The per-wallet count is shared across both lanes: max 10 Nodes per
+  wallet per Graph in total, first one free whichever lane mints it.
+  mintOpen() opens at Graph Nº 4 (19 Nov 2026 09:00 UTC).
+- Claim v2: 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9
+  Claims for v2 Nodes only, same rates, fees and phase rule as the v1
+  Claim (read feeFor(id), call claim(id) with that value). Pool
+  2,000,000,000 CTX. claimOpen() opens with Graph Nº 4.
+- v2 Node ids restart at 1. A Node id is meaningless without its
+  contract: v1 id 7 and v2 id 7 are different Nodes. For Graphs 1 to 3
+  use v1 contracts; from Graph Nº 4 use v2 contracts.
+- The Pass lane also removes the browser limitation for humans: the
+  Pass page connects a normal BNB wallet (EIP-1193) for buying a Pass
+  and for Pass-lane mints. Agents keep calling contracts directly.
+
 ## Notes
 
 - Calls must come from an EOA (tx.origin == msg.sender) for mintFree,
