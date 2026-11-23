@@ -6,8 +6,8 @@ const SEL = {
   nodesInGraph: "0x1b2ed607", participantsOf: "0xe200c857",
   verdictOf: "0xbcaa6cf7", graphEnd: "0x5f348a41", graphOf: "0x69e96bb2",
   isHub: "0x32e282f6", mintOpen: "0x24bbd049", claimOpen: "0x4b8bcb58",
-  totalClaimed: "0xd54ad2a1", claimable: "0xd1d58b25",
-  claimAmount: "0x23b221a0", feeFor: "0xad6f49a3", balanceOf: "0x70a08231",
+  totalClaimed: "0xd54ad2a1", claimable: "0x2640fc3e",
+  claimAmount: "0xed8e3506", feeFor: "0xbf1313e1", balanceOf: "0x70a08231",
 };
 const VERDICTS = ["Pending", "Isolated", "Linked", "Networked"];
 // Mint lanes: v1 (question/Pass), v2 (Pass), v3 (burn lane). Board
@@ -17,11 +17,13 @@ const NODES_ALL = [
   "0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2",
   "0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF",
 ];
+// Claims consolidated 23 Nov 2026 into one burn contract for all
+// lanes. OLD_CLAIMED_TOTAL freezes claims made on the earlier three
+// claim contracts (698 + 75 + 34), which the board keeps counting.
 const CLAIMS_ALL = [
-  "0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524",
-  "0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9",
-  "0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287",
+  "0x51A0d0617e76548906040c1Df7466934083980D8",
 ];
+const OLD_CLAIMED_TOTAL = 807;
 const $ = (id) => document.getElementById(id);
 const pad32 = (n) => BigInt(n).toString(16).padStart(64, "0");
 const fmt = (n) => n.toLocaleString("en-US");
@@ -271,7 +273,7 @@ async function refresh() {
     if ($("b-graph")) $("b-graph").textContent = `Nº ${g}`;
     tweenNum($("b-nodes"), nodesToday, fmt);
     tweenNum($("b-agents"), agents, fmt);
-    tweenNum($("b-claimed"), claimed, fmt);
+    tweenNum($("b-claimed"), claimed + OLD_CLAIMED_TOTAL, fmt);
     const poolTotal = poolParts.reduce((acc, h) => acc + BigInt(h), 0n);
     tweenNum($("b-pool"), Math.floor(Number(poolTotal / (10n ** 18n))), (n) => `${fmt(n)} CTX`);
     const st = $("b-status");
@@ -317,16 +319,16 @@ async function checkClaim() {
   try {
     const C = CONFIG.claim.address, N = CONFIG.nodes.address;
     const [ok, amount, fee, hub] = await Promise.all([
-      rpcCall(C, SEL.claimable + pad32(id)).then(asBool),
-      rpcCall(C, SEL.claimAmount + pad32(id)),
-      rpcCall(C, SEL.feeFor + pad32(id)),
+      rpcCall(C, SEL.claimable + pad32(0) + pad32(id)).then(asBool),
+      rpcCall(C, SEL.claimAmount + pad32(0) + pad32(id)),
+      rpcCall(C, SEL.feeFor + pad32(0) + pad32(id)),
       rpcCall(N, SEL.isHub + pad32(id)).then(asBool).catch(() => false),
     ]);
     const ctxAmt = fmt(Math.floor(Number(BigInt(amount)) / 1e18));
     const feeBnb = (Number(BigInt(fee)) / 1e18).toFixed(6);
     out.textContent = ok
-      ? `Node #${id}${hub ? " (Hub)" : ""} is claimable now: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claim through your agent.`
-      : `Node #${id}${hub ? " (Hub)" : ""} is not claimable yet. Value when mature: ${ctxAmt} CTX · fee ${feeBnb} BNB.`;
+      ? `Node #${id}${hub ? " (Hub)" : ""} is claimable now: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claim through your agent before 17:00 UTC on the seal day.`
+      : `Node #${id}${hub ? " (Hub)" : ""} is not claimable. Value: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claims close 17:00 UTC on the seal day, then unclaimed CTX burns.`;
     setStamp(ok);
   } catch (e) {
     out.textContent = "Node not found or chain read failed. Check the number and retry.";
@@ -341,7 +343,7 @@ function tickPhases() {
   const idx = Math.floor(new Date().getUTCHours() / 6);
   wrap.querySelectorAll(".phase").forEach((el, i) => el.classList.toggle("on", i === idx));
   const note = $("phase-note");
-  if (note) note.textContent = `Current claim phase · ${"ABCD"[idx]} · a sealed Node matures one phase after its Graph seals.`;
+  if (note) note.textContent = `Current claim phase · ${"ABCD"[idx]} · a sealed Node matures one phase after its Graph seals · claims close 17:00 UTC on seal day.`;
 }
 
 // Specimen gallery: swap the large plate, caption from metadata.

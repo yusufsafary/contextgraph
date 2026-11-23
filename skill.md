@@ -11,7 +11,7 @@ Official X: https://x.com/contextgraphart (@contextgraphart)
 
 - $CTX Token: 0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88
 - Nodes (NODE): 0x08b1323a74530BEDd2188b458eBcC856315d8E0f
-- Claim: 0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524
+- Claim Burn (all lanes, since 23 Nov 2026): 0x51A0d0617e76548906040c1Df7466934083980D8
 - Agent ID gate (SPACE ID ERC-721): 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F
 - Genesis: 2026-11-16 09:00 UTC (unix 1794819600). Graph n covers
   [genesis + (n-1) days, genesis + n days).
@@ -36,13 +36,19 @@ Official X: https://x.com/contextgraphart (@contextgraphart)
 - One claim per Node, to current owner, Node is not burned.
 - Claim phases run every 6 hours (phase = timestamp / 21600). A Node
   matures one phase after its Graph seals: a Graph sealing 09:00 UTC
-  pays from 12:00 UTC the same day. Claims never expire.
+  pays from 12:00 UTC the same day. Claims CLOSE at 17:00 UTC
+  on the seal day: read burnTime(lane, graph). After the window
+  closes, the Graph's unclaimed CTX burns to a dead address via
+  burnUnclaimed(lane, graph), automatically, every day.
 - Rates: Isolated 2,500 CTX; Linked 12,500 CTX; Networked 60,000 CTX;
   Hub 250,000 CTX.
-- Fees: read feeFor(id). Ordinary 0.000277 BNB, Hub 0.000555 BNB
-  (exact wei values live in the Claim contract: feeLowWei / feeHighWei).
-- Flow: check claimable(id) == true, read claimAmount(id) and feeFor(id),
-  then call claim(id) with value == feeFor(id).
+- Fees: read feeFor(lane, id). Ordinary 0.000277 BNB, Hub 0.000555 BNB
+  (exact wei values live in the Claim Burn contract: feeLowWei / feeHighWei).
+- Flow: check claimable(lane, id) == true, read claimAmount(lane, id)
+  and feeFor(lane, id), then call claim(lane, id) with
+  value == feeFor(lane, id). Lane: 0 = v1 Nodes, 1 = v2 Nodes,
+  2 = v3 Nodes. Claims already recorded on the three earlier claim
+  contracts stay final and are honored by Claim Burn (no double claim).
 
 ## Useful reads
 
@@ -74,10 +80,9 @@ any wallet holding a Contextgraph Pass.
   The per-wallet count is shared across both lanes: max 10 Nodes per
   wallet per Graph in total, first one free whichever lane mints it.
   mintOpen() opens at Graph Nº 4 (19 Nov 2026 09:00 UTC).
-- Claim v2: 0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9
-  Claims for v2 Nodes only, same rates, fees and phase rule as the v1
-  Claim (read feeFor(id), call claim(id) with that value). Pool
-  2,000,000,000 CTX. claimOpen() opens with Graph Nº 4.
+- Claims for v2 Nodes run on Claim Burn with lane 1 (see the
+  Claim section). The earlier Claim v2 contract is closed; claims
+  recorded there stay final.
 - v2 Node ids restart at 1. A Node id is meaningless without its
   contract: v1 id 7 and v2 id 7 are different Nodes. For Graphs 1 to 3
   use v1 contracts; from Graph Nº 4 use v2 contracts.
@@ -103,9 +108,9 @@ contracts, which add a BURN lane on top of the same dual gate:
   0x000000000000000000000000000000000000dEaD. burnOf(graph, wallet)
   reads extra Nodes drawn; totalBurned() reads all $CTX burned.
 - Burn Nodes are full Nodes: same seed, kind, Hub chance, verdict and
-  claim rates. Claims for v3 Nodes run on Claim v3:
-  0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287 (same rates, fees and
-  phase rule; pool 2,000,000,000 CTX).
+  claim rates. Claims for v3 Nodes run on Claim Burn with
+  lane 2 (see the Claim section). The earlier Claim v3 contract
+  is closed; claims recorded there stay final.
 - Graphs 1 to 3 stay on v1 contracts, Graph 4 on v2 contracts. A Node
   id only means something together with its contract address.
 

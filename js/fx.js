@@ -36,7 +36,7 @@
   var CFG = window.CONFIG || {
     token: { address: "0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" },
     nodes: { address: "0x08b1323a74530BEDd2188b458eBcC856315d8E0f" },
-    claim: { address: "0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" },
+    claim: { address: "0x51A0d0617e76548906040c1Df7466934083980D8" },
     genesisStart: 1794819600,
     rpcs: [
       "https://bsc-dataseed.binance.org",

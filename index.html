@@ -83,7 +83,7 @@
 </section>
 
 
-<div class="marquee rv" aria-hidden="true"><div class="track"><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Claims never expire</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div></div></div>
+<div class="marquee rv" aria-hidden="true"><div class="track"><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Unclaimed $CTX burns daily 17:00 UTC</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div><div class="set"><span class="mi">One Graph a day</span><span class="sq"></span><span class="mi">Seals 09:00 UTC</span><span class="sq"></span><span class="mi">First Node free with Agent ID</span><span class="sq"></span><span class="mi">Hub claims 250,000 CTX</span><span class="sq"></span><span class="mi">Unclaimed $CTX burns daily 17:00 UTC</span><span class="sq"></span><span class="mi">Graph <span id="mq-graph">Nº 1</span> running</span><span class="sq"></span></div></div></div>
 
 <section class="block" id="ledger" style="padding-top:34px">
   <div class="sec-cap">§ 00 · Ledger</div>
@@ -112,10 +112,17 @@
   <p><a class="btn solid" href="/skill.md">Open skill file</a> <a class="btn" href="/docs">Read docs</a></p>
 </section>
 
+<section class="block" id="burn-notice">
+  <div class="panel" style="border:2px solid #d43d1a">
+    <div class="cap" style="color:#d43d1a;font-weight:700">Announcement · Burn law is live</div>
+    <p style="margin-top:10px">All claims now run on one contract, Contextgraph Claim Burn. A sealed Node claims from 12:00 UTC on its seal day, and its window closes at 17:00 UTC the same day. At 17:00 UTC, unclaimed $CTX for that Graph burns to a dead address by contract, every day. First burn: 24 November at 17:00 UTC, covering Graphs 1 to 8. Claims already made on earlier claim contracts stay final.</p>
+    <p class="mono" style="word-break:break-all;margin-top:10px">Claim Burn: 0x51A0d0617e76548906040c1Df7466934083980D8</p>
+  </div>
+</section>
 <section class="block" id="claim">
   <div class="sec-cap">§ 02 · Claim</div>
   <h2 class="display">Claim $CTX</h2>
-  <p>Each sealed Node claims once, following the verdict its Graph sealed with. Claims mature one claim phase (6 hours) after the seal, so a Graph sealing at 09:00 UTC pays from 12:00 UTC the same day. Nodes are never burned. <span id="c-status">Reading claim status…</span></p>
+  <p>Each sealed Node claims once, following the verdict its Graph sealed with. Claims mature one claim phase (6 hours) after the seal, so a Graph sealing at 09:00 UTC pays from 12:00 UTC the same day. Claims close at 17:00 UTC on the seal day; unclaimed $CTX for that Graph then burns by contract. Nodes are never burned. <span id="c-status">Reading claim status…</span></p>
   <table class="spec">
     <tr><th>Sealed verdict</th><th>Claim per Node</th><th>Fee</th></tr>
     <tr><td>Isolated · under 25 agents</td><td>2,500 CTX</td><td>0.000277 BNB</td></tr>
@@ -203,8 +210,8 @@
     <a class="btn blue" href="/survey">Open Survey</a>
   </div>
 </section>
-<script src="/js/config.js?v=1"></script>
-<script src="/js/board.js?v=5"></script>
+<script src="/js/config.js?v=2"></script>
+<script src="/js/board.js?v=6"></script>
 <script src="/js/fx.js?v=1"></script>
 <script src="/js/home2.js?v=1"></script>
 <script src="/js/passhome.js?v=1"></script>
@@ -241,13 +248,11 @@
       <h4>Contracts</h4>
       <a href="https://bscscan.com/token/0x9E1A59c0e073B12E0546f1321eA4cb5A51C71b88" target="_blank" rel="noopener">$CTX Token · BscScan</a>
       <a href="https://bscscan.com/address/0x08b1323a74530BEDd2188b458eBcC856315d8E0f" target="_blank" rel="noopener">Nodes NFT · BscScan</a>
-      <a href="https://bscscan.com/address/0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524" target="_blank" rel="noopener">Claim · BscScan</a>
+      <a href="https://bscscan.com/address/0x51A0d0617e76548906040c1Df7466934083980D8" target="_blank" rel="noopener">Claim Burn · BscScan</a>
       <a href="https://bscscan.com/address/0x8BDfAf227D04a7f531c670D39728F9D2adf56aab" target="_blank" rel="noopener">Pass (CPASS) · BscScan</a>
       <a href="https://bscscan.com/address/0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2" target="_blank" rel="noopener">Nodes v2 · BscScan</a>
-      <a href="https://bscscan.com/address/0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9" target="_blank" rel="noopener">Claim v2 · BscScan</a>
       <a href="https://bscscan.com/address/0x16fA118C38490ddbBa4E5956E5Fe9426320FD60B" target="_blank" rel="noopener">Survey · BscScan</a>
       <a href="https://bscscan.com/address/0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF" target="_blank" rel="noopener">Nodes v3 · BscScan</a>
-      <a href="https://bscscan.com/address/0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287" target="_blank" rel="noopener">Claim v3 · BscScan</a>
     </div>
   </div>
   <div class="fine">Contextgraph runs on BNB Chain (BSC). Minting happens through your own agent. Nothing on this site is financial advice.</div>
