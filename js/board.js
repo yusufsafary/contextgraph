@@ -10,6 +10,18 @@ const SEL = {
   claimAmount: "0x23b221a0", feeFor: "0xad6f49a3", balanceOf: "0x70a08231",
 };
 const VERDICTS = ["Pending", "Isolated", "Linked", "Networked"];
+// Mint lanes: v1 (question/Pass), v2 (Pass), v3 (burn lane). Board
+// totals sum all three lanes, matching the published Graph counts.
+const NODES_ALL = [
+  "0x08b1323a74530BEDd2188b458eBcC856315d8E0f",
+  "0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2",
+  "0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF",
+];
+const CLAIMS_ALL = [
+  "0x3552cd445b9Bb79046fa82e3c1Cd2fa8AF1EF524",
+  "0x35B69a4204DC143B8CfEe5D91541D25e8D4095E9",
+  "0xA3dC232AD1F2fcFcb286d5Fb41EF9a04edA9d287",
+];
 const $ = (id) => document.getElementById(id);
 const pad32 = (n) => BigInt(n).toString(16).padStart(64, "0");
 const fmt = (n) => n.toLocaleString("en-US");
@@ -28,6 +40,20 @@ async function rpcCall(to, data) {
 }
 const asInt = (hex) => Number(BigInt(hex));
 const asBool = (hex) => BigInt(hex) !== 0n;
+
+// Sum one view across contracts; a lane that fails reads as 0.
+async function sumInt(addresses, data) {
+  const vals = await Promise.all(
+    addresses.map((a) => rpcCall(a, data).then(asInt).catch(() => 0))
+  );
+  return vals.reduce((x, y) => x + y, 0);
+}
+async function anyBool(addresses, data) {
+  const vals = await Promise.all(
+    addresses.map((a) => rpcCall(a, data).then(asBool).catch(() => false))
+  );
+  return vals.some(Boolean);
+}
 
 let sealTs = 0;
 function tickClock() {
@@ -230,21 +256,24 @@ async function refresh() {
     const N = CONFIG.nodes.address, C = CONFIG.claim.address, T = CONFIG.token.address;
     const g = asInt(await rpcCall(N, SEL.currentGraph));
     if (!g) return;
-    const [nodesToday, agents, end, mintOpen, claimOpen, claimed, poolRaw] = await Promise.all([
-      rpcCall(N, SEL.nodesInGraph + pad32(g)).then(asInt),
-      rpcCall(N, SEL.participantsOf + pad32(g)).then(asInt),
+    const [nodesToday, agents, end, mintOpen, claimOpen, claimed, poolParts, prevAgents] = await Promise.all([
+      sumInt(NODES_ALL, SEL.nodesInGraph + pad32(g)),
+      sumInt(NODES_ALL, SEL.participantsOf + pad32(g)),
       rpcCall(N, SEL.graphEnd + pad32(g)).then(asInt),
-      rpcCall(N, SEL.mintOpen).then(asBool),
-      rpcCall(C, SEL.claimOpen).then(asBool),
-      rpcCall(C, SEL.totalClaimed).then(asInt),
-      rpcCall(T, SEL.balanceOf + "000000000000000000000000" + C.slice(2).toLowerCase()),
+      anyBool(NODES_ALL, SEL.mintOpen),
+      anyBool(CLAIMS_ALL, SEL.claimOpen),
+      sumInt(CLAIMS_ALL, SEL.totalClaimed),
+      Promise.all(CLAIMS_ALL.map((c) =>
+        rpcCall(T, SEL.balanceOf + "000000000000000000000000" + c.slice(2).toLowerCase()).catch(() => "0x0"))),
+      g > 1 ? sumInt(NODES_ALL, SEL.participantsOf + pad32(g - 1)) : Promise.resolve(0),
     ]);
     sealTs = end;
     if ($("b-graph")) $("b-graph").textContent = `Nº ${g}`;
     tweenNum($("b-nodes"), nodesToday, fmt);
     tweenNum($("b-agents"), agents, fmt);
     tweenNum($("b-claimed"), claimed, fmt);
-    tweenNum($("b-pool"), Math.floor(Number(BigInt(poolRaw)) / 1e18), (n) => `${fmt(n)} CTX`);
+    const poolTotal = poolParts.reduce((acc, h) => acc + BigInt(h), 0n);
+    tweenNum($("b-pool"), Math.floor(Number(poolTotal / (10n ** 18n))), (n) => `${fmt(n)} CTX`);
     const st = $("b-status");
     if (st) {
       st.textContent = mintOpen ? "Mint open" : "Mint opens soon";
@@ -260,9 +289,10 @@ async function refresh() {
     if (gv) gv.textContent = agents < 25 ? "Heading to Isolated" : agents <= 100 ? "Heading to Linked" : "Heading to Networked";
     plateShow(nodesToday, g);
     if (g > 1) {
-      const v = asInt(await rpcCall(N, SEL.verdictOf + pad32(g - 1)));
+      // Verdict of the sealed Graph from combined unique participants.
+      const v = prevAgents === 0 ? 0 : prevAgents < 25 ? 1 : prevAgents <= 100 ? 2 : 3;
       const el = $("b-lastverdict");
-      if (el) el.textContent = `Graph Nº ${g - 1} · ${VERDICTS[v] || "Pending"}`;
+      if (el) el.textContent = `Graph Nº ${g - 1} · ${VERDICTS[v]}`;
     }
     tickClock();
   } catch (e) { /* keep last good render */ }
