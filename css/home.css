@@ -187,3 +187,11 @@ section#hackathon .hackplate { background: var(--ink); color: var(--paper); bord
 .hackstats span { font-family: "Space Mono", monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(244,239,230,.6); }
 @media (max-width: 820px) { .hackstats { grid-template-columns: 1fr 1fr; } .hackplate { padding: 22px 18px 26px; } }
 #claimwin-cell.open .val { color: var(--cobalt); }
+
+/* 2026-11-28 film plate */
+section#film .filmplate { padding: 30px 30px 26px; }
+.filmplate h2 .red { color: #d43d1a; }
+.filmplate p { max-width: 760px; }
+.filmplate video { width: 100%; height: auto; display: block; border: 3px solid var(--line); background: #211d15; margin-top: 18px; }
+.filmcap { font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: .18em; color: var(--mut, #57503f); margin-top: 12px; }
+@media (max-width: 820px) { section#film .filmplate { padding: 22px 18px 20px; } }
