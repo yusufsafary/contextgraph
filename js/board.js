@@ -6,7 +6,7 @@ const SEL = {
   nodesInGraph: "0x1b2ed607", participantsOf: "0xe200c857",
   verdictOf: "0xbcaa6cf7", graphEnd: "0x5f348a41", graphOf: "0x69e96bb2",
   isHub: "0x32e282f6", mintOpen: "0x24bbd049", claimOpen: "0x4b8bcb58",
-  totalClaimed: "0xd54ad2a1", claimable: "0x2640fc3e",
+  totalClaimed: "0xd54ad2a1", totalBurned: "0xd89135cd", claimable: "0x2640fc3e",
   claimAmount: "0xed8e3506", feeFor: "0xbf1313e1", balanceOf: "0x70a08231",
 };
 const VERDICTS = ["Pending", "Isolated", "Linked", "Networked"];
@@ -58,14 +58,34 @@ async function anyBool(addresses, data) {
 }
 
 let sealTs = 0;
-function tickClock() {
-  if (!sealTs) return;
-  const left = Math.max(0, sealTs - Math.floor(Date.now() / 1000));
+function fmtHMS(left) {
   const h = String(Math.floor(left / 3600)).padStart(2, "0");
   const m = String(Math.floor((left % 3600) / 60)).padStart(2, "0");
   const s = String(left % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+// Claim window for the Graph that sealed today: opens 12:00 UTC,
+// closes 17:00 UTC, then unclaimed CTX burns.
+function tickClaimWin() {
+  const el = $("b-claimwin"), lab = $("b-claimwin-lab"), cell = $("claimwin-cell");
+  if (!el) return;
+  const now = new Date();
+  const mins = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const secs = now.getUTCSeconds();
+  let target, label, open = false;
+  if (mins < 12 * 60) { target = 12 * 3600 - (mins * 60 + secs); label = "Claim window · opens in"; }
+  else if (mins < 17 * 60) { target = 17 * 3600 - (mins * 60 + secs); label = "Claim window · closes in"; open = true; }
+  else { target = 24 * 3600 - (mins * 60 + secs) + 12 * 3600; label = "Claim window · opens in"; }
+  el.textContent = fmtHMS(Math.max(0, target));
+  if (lab) lab.textContent = label;
+  if (cell) cell.classList.toggle("open", open);
+}
+function tickClock() {
+  tickClaimWin();
+  if (!sealTs) return;
+  const left = Math.max(0, sealTs - Math.floor(Date.now() / 1000));
   const el = $("b-seal");
-  if (el) el.textContent = `${h}:${m}:${s}`;
+  if (el) el.textContent = fmtHMS(left);
 }
 setInterval(tickClock, 1000);
 
@@ -276,6 +296,9 @@ async function refresh() {
     tweenNum($("b-claimed"), claimed + OLD_CLAIMED_TOTAL, fmt);
     const poolTotal = poolParts.reduce((acc, h) => acc + BigInt(h), 0n);
     tweenNum($("b-pool"), Math.floor(Number(poolTotal / (10n ** 18n))), (n) => `${fmt(n)} CTX`);
+    rpcCall(C, SEL.totalBurned).then((hex) => {
+      tweenNum($("l-burned"), Math.floor(Number(BigInt(hex) / (10n ** 18n))), (n) => `${fmt(n)}`);
+    }).catch(() => {});
     const st = $("b-status");
     if (st) {
       st.textContent = mintOpen ? "Mint open" : "Mint opens soon";
@@ -317,21 +340,37 @@ async function checkClaim() {
   out.textContent = "Reading chain…";
   setStamp(null);
   try {
-    const C = CONFIG.claim.address, N = CONFIG.nodes.address;
-    const [ok, amount, fee, hub] = await Promise.all([
-      rpcCall(C, SEL.claimable + pad32(0) + pad32(id)).then(asBool),
-      rpcCall(C, SEL.claimAmount + pad32(0) + pad32(id)),
-      rpcCall(C, SEL.feeFor + pad32(0) + pad32(id)),
-      rpcCall(N, SEL.isHub + pad32(id)).then(asBool).catch(() => false),
-    ]);
-    const ctxAmt = fmt(Math.floor(Number(BigInt(amount)) / 1e18));
-    const feeBnb = (Number(BigInt(fee)) / 1e18).toFixed(6);
-    out.textContent = ok
-      ? `Node #${id}${hub ? " (Hub)" : ""} is claimable now: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claim through your agent before 17:00 UTC on the seal day.`
-      : `Node #${id}${hub ? " (Hub)" : ""} is not claimable. Value: ${ctxAmt} CTX · fee ${feeBnb} BNB. Claims close 17:00 UTC on the seal day, then unclaimed CTX burns.`;
-    setStamp(ok);
+    const C = CONFIG.claim.address;
+    const laneNames = ["Nodes v1", "Nodes v2", "Nodes v3"];
+    const lines = [];
+    let anyOk = false, found = false;
+    // Node numbers repeat across lanes; report every lane holding one.
+    for (let lane = 0; lane < NODES_ALL.length; lane++) {
+      const nodesAddr = NODES_ALL[lane];
+      let g = 0;
+      try { g = asInt(await rpcCall(nodesAddr, SEL.graphOf + pad32(id))); } catch (e) { continue; }
+      if (!g) continue;
+      found = true;
+      const [ok, amount, fee, hub] = await Promise.all([
+        rpcCall(C, SEL.claimable + pad32(lane) + pad32(id)).then(asBool),
+        rpcCall(C, SEL.claimAmount + pad32(lane) + pad32(id)),
+        rpcCall(C, SEL.feeFor + pad32(lane) + pad32(id)),
+        rpcCall(nodesAddr, SEL.isHub + pad32(id)).then(asBool).catch(() => false),
+      ]);
+      const ctxAmt = fmt(Math.floor(Number(BigInt(amount)) / 1e18));
+      const feeBnb = (Number(BigInt(fee)) / 1e18).toFixed(6);
+      if (ok) anyOk = true;
+      lines.push(`${laneNames[lane]} · Graph Nº ${g} · Node #${id}${hub ? " · Hub" : ""}: ${ok ? "claimable now" : "not claimable"} · ${ctxAmt} CTX · fee ${feeBnb} BNB`);
+    }
+    if (!found) {
+      out.textContent = `Node #${id} not found on any Nodes lane. Check the number and retry.`;
+      setStamp(null);
+      return;
+    }
+    out.textContent = lines.join("  |  ") + "  ·  Claims close 17:00 UTC on the seal day; unclaimed CTX then burns.";
+    setStamp(anyOk);
   } catch (e) {
-    out.textContent = "Node not found or chain read failed. Check the number and retry.";
+    out.textContent = "Chain read failed. Retry in a moment.";
     setStamp(null);
   }
 }

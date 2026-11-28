@@ -9,6 +9,20 @@
   if (!FX) return;
   var REDUCED = FX.REDUCED;
   var N = FX.CFG.nodes.address, C = FX.CFG.claim.address, SEL = FX.SEL;
+  // All three mint lanes (v1, v2 Pass lane, v3 burn lane). Ledger and
+  // feed totals sum every lane, matching board.js and published counts.
+  var LANES = [
+    "0x08b1323a74530BEDd2188b458eBcC856315d8E0f",
+    "0x189DB6602B8D41a0d14CcCc9e999DC3aF895c3f2",
+    "0xE71dc7Bb9cB95fa6Ee92c09a9D79a7C26b78eeAF",
+  ];
+  var OLD_CLAIMED_TOTAL = 807; // claims frozen on the pre-burn claim contracts
+  async function sumLanes(data) {
+    var vals = await Promise.all(LANES.map(function (a) {
+      return FX.call(a, data).then(FX.asInt).catch(function () { return 0; });
+    }));
+    return vals.reduce(function (x, y) { return x + y; }, 0);
+  }
   var $ = function (id) { return document.getElementById(id); };
   var GA = Math.PI * (3 - Math.sqrt(5)); // golden angle
 
@@ -172,7 +186,7 @@
   }
   async function pollFeed() {
     try {
-      var total = FX.asInt(await FX.call(N, SEL.totalNodes));
+      var total = await sumLanes(SEL.totalNodes);
       var g = FX.asInt(await FX.call(N, SEL.currentGraph));
       if (feedBase === null) { feedBase = { total: total, graph: g }; seedFeed(total, g); return; }
       if (g !== feedBase.graph) {
@@ -197,9 +211,9 @@
     try {
       var g = FX.asInt(await FX.call(N, SEL.currentGraph));
       if (!g) return;
-      var nodesToday = FX.asInt(await FX.call(N, SEL.nodesInGraph + FX.pad32(g)));
-      var total = FX.asInt(await FX.call(N, SEL.totalNodes));
-      var claimed = FX.asInt(await FX.call(C, SEL.totalClaimed));
+      var nodesToday = await sumLanes(SEL.nodesInGraph + FX.pad32(g));
+      var total = await sumLanes(SEL.totalNodes);
+      var claimed = FX.asInt(await FX.call(C, SEL.totalClaimed)) + OLD_CLAIMED_TOTAL;
       var end = FX.asInt(await FX.call(N, SEL.graphEnd + FX.pad32(g)));
       state = {
         graph: g, nodesToday: nodesToday, total: total, claimed: claimed,

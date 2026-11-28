@@ -162,3 +162,28 @@
 }
 .announce .sq { width: 7px; height: 7px; background: var(--cobalt); flex: none; }
 @media (max-width: 480px) { .announce { font-size: 10px; letter-spacing: 0.5px; padding: 8px 10px; gap: 8px; } .announce .sq { width: 6px; height: 6px; } }
+
+/* --- upgrade 2026-11-28: hackathon plate, ledger burn cell --- */
+section#ledger .ledger { grid-template-columns: repeat(5, 1fr); }
+section#ledger .ledger .cell.burn .val { color: #d43d1a; }
+@media (max-width: 820px) {
+  section#ledger .ledger { grid-template-columns: 1fr 1fr; }
+  section#ledger .ledger .cell.burn { grid-column: span 2; border-right: none; }
+}
+section#hackathon .hackplate { background: var(--ink); color: var(--paper); border-color: var(--ink); padding: 30px 30px 34px; position: relative; overflow: hidden; }
+@media (max-width: 480px) { #b-seal, #b-claimwin { font-size: 20px; white-space: nowrap; } }
+.hackplate::before, .hackplate::after { content: ""; position: absolute; width: 18px; height: 18px; border: 3px solid var(--cobalt); }
+.hackplate::before { left: 10px; top: 10px; border-right: none; border-bottom: none; }
+.hackplate::after { right: 10px; bottom: 10px; border-left: none; border-top: none; }
+.hackband { display: flex; flex-wrap: wrap; gap: 16px 34px; align-items: center; border-bottom: 1px solid rgba(244,239,230,.28); padding-bottom: 18px; margin-bottom: 22px; }
+.hackhost { display: flex; align-items: center; gap: 12px; font-family: "Archivo Black", sans-serif; font-size: 19px; letter-spacing: .04em; color: var(--paper); }
+.hackhost .chip-img { background: var(--paper); border-radius: 10px; padding: 6px; display: flex; flex: none; }
+.hackhost img { height: 40px; width: 40px; display: block; }
+.hackplate h2.display { color: var(--paper); margin-top: 0; }
+.hackplate h2 .blue { color: #93a5ff; }
+.hackplate p { color: rgba(244,239,230,.85); max-width: 760px; }
+.hackstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; border-top: 1px solid rgba(244,239,230,.28); padding-top: 20px; margin: 22px 0 24px; }
+.hackstats b { display: block; font-family: "Archivo Black", sans-serif; font-size: clamp(21px, 3.4vw, 30px); color: var(--paper); }
+.hackstats span { font-family: "Space Mono", monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(244,239,230,.6); }
+@media (max-width: 820px) { .hackstats { grid-template-columns: 1fr 1fr; } .hackplate { padding: 22px 18px 26px; } }
+#claimwin-cell.open .val { color: var(--cobalt); }
